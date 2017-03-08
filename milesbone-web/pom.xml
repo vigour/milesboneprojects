@@ -1,0 +1,108 @@
+<?xml version="1.0"?>
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.milesbone</groupId>
+		<artifactId>milesboneprojects</artifactId>
+		<version>1.0-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>milesbone-web</artifactId>
+	<packaging>war</packaging>
+	<name>milesbone-web Maven Webapp</name>
+	<url>http://maven.apache.org</url>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.compiler.source>1.7</maven.compiler.source>
+		<maven.compiler.target>1.7</maven.compiler.target>
+		<!-- maven 编译 -->
+		<maven.compiler.plugin.version>3.5.1</maven.compiler.plugin.version>
+		<junit.version>4.12</junit.version>
+
+		<servlet.version>3.1.0</servlet.version>
+	</properties>
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
+
+
+		<!-- 引入Service -->
+		<dependency>
+			<groupId>com.milesbone</groupId>
+			<artifactId>milesbone-core</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.milesbone</groupId>
+			<artifactId>milesbone-public</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.milesbone</groupId>
+			<artifactId>milesbone-utils</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.milesbone</groupId>
+			<artifactId>milesbone-session</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.milesbone</groupId>
+			<artifactId>milesbone-framework</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.milesbone</groupId>
+			<artifactId>milesbone-hbase</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+
+		<dependency>
+			<groupId>com.milesbone</groupId>
+			<artifactId>milesbone-messagequeue</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+	</dependencies>
+	<build>
+		<finalName>milesbone-web</finalName>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>${maven.compiler.plugin.version}</version>
+					<configuration>
+						<!-- put your configurations here -->
+						<source>${maven.compiler.source}</source>
+						<target>${maven.compiler.target}</target>
+						<!-- <webXml>webapp/WEB-INF/web.xml</webXml> <warSourceDirectory>webroot</warSourceDirectory> 
+							<failOnMissingWebXml>false</failOnMissingWebXml> <webResources> <resource> 
+							<directory>${runtime.env}</directory> <targetPath>WEB-INF/classes</targetPath> 
+							<filtering>true</filtering> </resource> </webResources> -->
+					</configuration>
+				</plugin>
+
+			</plugins>
+		</pluginManagement>
+	</build>
+</project>
