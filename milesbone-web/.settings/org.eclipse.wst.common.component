@@ -21,6 +21,9 @@
         <dependent-module archiveName="milesbone-utils-1.0-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/milesbone-utils/milesbone-utils">
             <dependency-type>uses</dependency-type>
         </dependent-module>
+        <dependent-module archiveName="milesbone-common-1.0-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/milesbone-common/milesbone-common">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
         <dependent-module archiveName="milesbone-session-1.0-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/milesbone-session/milesbone-session">
             <dependency-type>uses</dependency-type>
         </dependent-module>
