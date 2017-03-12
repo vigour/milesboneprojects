@@ -55,9 +55,12 @@
 		<!-- 格式化对象，方便输出日志 -->
 		<fastjson.version>1.2.12</fastjson.version>
 
+		<!-- common -->
+		<commons.lang3.version>3.1</commons.lang3.version>
+		<commons.io.version>2.5</commons.io.version>
 		<!-- logback -->
 		<logback.version>1.1.7</logback.version>
-		<jcl.over.slf4j.version>1.7.21</jcl.over.slf4j.version>
+		<org.slf4j.version>1.7.21</org.slf4j.version>
 
 		<!-- Distribution start -->
 
@@ -86,6 +89,7 @@
 		<module>milesbone-session</module>
 		<module>milesbone-framework</module>
 		<module>milesbone-web</module>
+		<module>milesbone-common</module>
 	</modules>
 
 
@@ -257,27 +261,54 @@
 				<version>${fastjson.version}</version>
 			</dependency>
 
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-lang3</artifactId>
+				<version>${commons.lang3.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>commons-io</groupId>
+				<artifactId>commons-io</artifactId>
+				<version>${commons.io.version}</version>
+			</dependency>
 
-			<!-- <dependency> -->
-			<!-- <groupId>org.slf4j</groupId> -->
-			<!-- <artifactId>slf4j-api</artifactId> -->
-			<!-- <version>${slf4j-api}</version> -->
-			<!-- </dependency> -->
+			
 			<dependency>
 				<groupId>ch.qos.logback</groupId>
 				<artifactId>logback-classic</artifactId>
 				<version>${logback.version}</version>
 			</dependency>
 			<dependency>
+			  <groupId>org.slf4j</groupId>
+			  <artifactId>slf4j-api</artifactId>
+			  <version>${org.slf4j.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>org.slf4j</groupId>
 				<artifactId>jcl-over-slf4j</artifactId>
-				<version>${jcl.over.slf4j.version}</version>
+				<version>${org.slf4j.version}</version>
+			</dependency>
+			<dependency>  
+			    <groupId>org.slf4j</groupId>  
+			    <artifactId>log4j-over-slf4j</artifactId>  
+			    <version>${org.slf4j.version}</version>  
+			</dependency>  
+			<dependency>  
+			    <groupId>org.slf4j</groupId>  
+			    <artifactId>jul-to-slf4j</artifactId>  
+			    <version>${org.slf4j.version}</version>  
 			</dependency>
 
 			<dependency>
 				<groupId>org.apache.zookeeper</groupId>
 				<artifactId>zookeeper</artifactId>
 				<version>${zookeeper.version}</version>
+			</dependency>
+			
+			<dependency>
+			    <groupId>org.apache.curator</groupId>
+			    <artifactId>curator-recipes</artifactId>
+			    <version>${curator.version}</version>
 			</dependency>
 
 			<dependency>
@@ -287,8 +318,8 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
-	
-	<!-- 父模块定义 环境-->
+
+	<!-- 父模块定义 环境 -->
 	<profiles>
 		<profile>
 			<id>LOCAL</id>
@@ -318,7 +349,7 @@
 			</properties>
 		</profile>
 	</profiles>
-	
+
 
 	<!-- 父模块定义了plugin ,子模块如果想引入这个插件，如下声明即可，它同时又继承了父模块的配置 -->
 	<build>
