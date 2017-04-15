@@ -1,4 +1,4 @@
-package com.milesbone;
+package com.milesbone.warehouse;
 
 /**
  * Hello world!

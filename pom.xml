@@ -84,13 +84,11 @@
 		<module>milesbone-public</module>
 		<module>milesbone-zookeeper</module>
 		<module>milesbone-messagequeue</module>
-		<module>milesbone-hbase</module>
 		<module>milesbone-cache</module>
 		<module>milesbone-session</module>
 		<module>milesbone-framework</module>
 		<module>milesbone-web</module>
-<!-- 		<module>milesbone-common</module> -->
-<!-- 		<module>milesbone-redis</module> -->
+		<module>milesbone-warehouse</module>
 	</modules>
 
 

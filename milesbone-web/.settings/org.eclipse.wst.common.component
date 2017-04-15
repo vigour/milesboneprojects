@@ -30,7 +30,7 @@
         <dependent-module archiveName="milesbone-framework-1.0-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/milesbone-framework/milesbone-framework">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="milesbone-hbase-1.0-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/milesbone-hbase/milesbone-hbase">
+        <dependent-module archiveName="milesbone-warehouse-1.0-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/milesbone-warehouse/milesbone-warehouse">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <dependent-module archiveName="milesbone-zookeeper-1.0-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/milesbone-zookeeper/milesbone-zookeeper">

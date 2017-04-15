@@ -1,4 +1,4 @@
-package com.milesbone;
+package com.milesbone.warehouse;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
