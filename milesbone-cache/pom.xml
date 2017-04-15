@@ -27,14 +27,19 @@
 		
 		<dependency>
 			<groupId>com.milesbone</groupId>
-			<artifactId>milesbone-common</artifactId>
+			<artifactId>milesbone-public</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		
 		<dependency>
 			<groupId>com.milesbone</groupId>
-			<artifactId>milesbone-redis</artifactId>
+			<artifactId>milesbone-utils</artifactId>
 			<version>${project.version}</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>redis.clients</groupId>
+			<artifactId>jedis</artifactId>
 		</dependency>
 	</dependencies>
 </project>

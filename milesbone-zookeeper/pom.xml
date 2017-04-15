@@ -33,7 +33,7 @@
 
 		<dependency>
 			<groupId>com.milesbone</groupId>
-			<artifactId>milesbone-common</artifactId>
+			<artifactId>milesbone-public</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 
