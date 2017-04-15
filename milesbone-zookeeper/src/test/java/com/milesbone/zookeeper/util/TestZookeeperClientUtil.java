@@ -26,7 +26,10 @@ public class TestZookeeperClientUtil extends TestZookeeperUtil{
 		Thread.sleep(1000);		
 	}
 	
-	
+	@Test
+	public void testCreateNodeBackgroud() throws InterruptedException{
+		zookeeperUtil.createNodeAsync("/zkclientPath/t2", "/zkclientPath/t2", Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
+	}
 	@Test
 	public void testDeleteNode() throws InterruptedException, KeeperException{
 		zookeeperUtil.deleteNode("/zkclientPath/t1", -1);
@@ -56,4 +59,7 @@ public class TestZookeeperClientUtil extends TestZookeeperUtil{
 		stat = zookeeperUtil.setData("/zkclientPath/t1", "t1datatest".getBytes(), stat.getVersion());
 		logger.info("更新节点{}数据完成,stat:{}","/zkclientPath/t1",stat.getVersion());
 	}
+	
+	
+	
 }

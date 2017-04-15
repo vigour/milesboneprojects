@@ -3,10 +3,14 @@ package com.milesbone.zookeeper.util;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
+import org.apache.curator.framework.api.BackgroundCallback;
+import org.apache.curator.framework.api.CuratorEvent;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
@@ -18,7 +22,7 @@ import org.slf4j.LoggerFactory;
 
 import com.milesbone.zookeeper.config.ZookeeperConfiguration;
 
-public class CuratorZookeeperUtil implements ZookeeperUtil{
+public class CuratorZookeeperUtil implements IZookeeperUtil{
 
 	private static final Logger logger = LoggerFactory.getLogger(CuratorZookeeperUtil.class);
 	
@@ -42,6 +46,10 @@ public class CuratorZookeeperUtil implements ZookeeperUtil{
 	
 	private int connectionTimeout;
 
+	private int threadCount;
+	
+	private ExecutorService executorService = null;
+	
 	public CuratorZookeeperUtil() {
 		init();
 	}
@@ -58,6 +66,7 @@ public class CuratorZookeeperUtil implements ZookeeperUtil{
 								.namespace(systemName)
 								.build();
 		curatorFramework.start();
+		connectedSemaphore.countDown();
 		logger.debug("创建CuratorFramework完成");
 	}
 	
@@ -70,6 +79,7 @@ public class CuratorZookeeperUtil implements ZookeeperUtil{
 		if(curatorFramework != null){
 			curatorFramework.close();
 		}
+		executorService.shutdown();
 		logger.debug("关闭curatorFramework完成");
 	}
 
@@ -90,6 +100,8 @@ public class CuratorZookeeperUtil implements ZookeeperUtil{
 		baseSleeptime = Integer.parseInt(zookeeperProp.getProperty("cuartor.basesleeptime", "1000"));
 		maxRetriescount = Integer.parseInt(zookeeperProp.getProperty("cuartor.maxretriescount", "5"));
 		maxSleeptime = Integer.parseInt(zookeeperProp.getProperty("cuartor.maxsleeptime", "60000"));
+		threadCount = Integer.parseInt(zookeeperProp.getProperty("cuartor.threadcount", "3"));
+		executorService = Executors.newFixedThreadPool(threadCount);
 		logger.debug("初始化CuratorUtil类完成");
 	}
 	
@@ -110,6 +122,41 @@ public class CuratorZookeeperUtil implements ZookeeperUtil{
 	}
 
 
+	public void createNodeAsync(String path, String data, List<ACL> acl, CreateMode createMode) {
+		logger.debug("异步创建节点开始...");
+		try {
+			connectedSemaphore.await();
+		} catch (InterruptedException e) {
+			logger.error("线程等待异常:",e.getMessage());
+			e.printStackTrace();
+		}
+//		connectedSemaphore = new CountDownLatch(1);
+		try {
+			curatorFramework.create()
+					.creatingParentsIfNeeded().withMode(createMode)
+					.withACL(acl)
+					.inBackground(new BackgroundCallback() {
+						
+						public void processResult(CuratorFramework client, CuratorEvent event) throws Exception {
+							logger.debug("执行异步调用方法...");
+							if(event.getResultCode()==0){
+								logger.debug("执行异步创建节点操作成功:event[code:{},type:{},thread:{}]",event.getResultCode(),event.getType(),Thread.currentThread().getName());
+							}else{
+								logger.error("执行异步创建节点失败:event[code:{},type:{},thread:{}]",event.getResultCode(),event.getType(),Thread.currentThread().getName());
+							}
+							logger.debug("执行异步调用方法完成");
+//							connectedSemaphore.countDown();
+						}
+					},executorService).forPath(path,data.getBytes());
+		} catch (Exception e) {
+			logger.error("异步创建节点异常:{}",e.getMessage());
+			e.printStackTrace();
+		}
+		
+		logger.debug("异步创建{}节点完成",path);
+	}
+	
+	
 	public Stat existNode(String path, Watcher watcher) throws KeeperException, InterruptedException {
 		Stat stat = null;
 		try {
@@ -201,5 +248,4 @@ public class CuratorZookeeperUtil implements ZookeeperUtil{
 		return stat;
 	}
 
-	
 }

@@ -17,8 +17,8 @@ import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.milesbone.zookeeper.listener.IListener;
-import com.milesbone.zookeeper.lock.DistributedLock;
+import com.milesbone.zookeeper.listener.IZookeeperListener;
+import com.milesbone.zookeeper.lock.IDistributedLock;
 import com.milesbone.zookeeper.util.ZookeeperClientUtil;
 
 /**
@@ -27,10 +27,10 @@ import com.milesbone.zookeeper.util.ZookeeperClientUtil;
  * @author miles
  * @date 2017-03-11 下午9:02:53
  */
-public class ZkClientDistributedLock implements DistributedLock {
+public class ZkClientDistributedLock implements IDistributedLock {
 	private static final Logger logger = LoggerFactory.getLogger(ZkClientDistributedLock.class);
 	private String lock;// 锁字符串
-	private IListener listener;// 获取锁后的回调
+	private IZookeeperListener listener;// 获取锁后的回调
 	private CountDownLatch countDownLatch = null;
 	private ZookeeperClientUtil zkClientUtil = null;
 	private final String INNER_LOCK = "/innerlock";
@@ -38,7 +38,7 @@ public class ZkClientDistributedLock implements DistributedLock {
 	private final String UNFAIR_ROOT_PATH = "/distributedlock/unfair";
 	private volatile boolean fair; // true 公平 false 非公平
 	private volatile boolean isLock = false; // true 公平 false 非公平
-	private IDistributedLock distributedLock;
+	private IZookeeperDistributedLock distributedLock;
 	private AtomicBoolean runFlg = new AtomicBoolean(false);//运行标示
 	
 	
@@ -65,13 +65,13 @@ public class ZkClientDistributedLock implements DistributedLock {
 	 * @param lock
 	 * @param listener
 	 */
-	public ZkClientDistributedLock(String lock, IListener listener) {
+	public ZkClientDistributedLock(String lock, IZookeeperListener listener) {
 		this(lock,listener,true);
 	}
 
 
 
-	public ZkClientDistributedLock(String lock, IListener listener, boolean fair) {
+	public ZkClientDistributedLock(String lock, IZookeeperListener listener, boolean fair) {
 		super();
 		checkPath(lock);
 		countDownLatch = new CountDownLatch(1);
@@ -160,7 +160,7 @@ public class ZkClientDistributedLock implements DistributedLock {
 
 
 
-	public void getLock() throws Exception {
+	public void acquire() throws Exception {
 		if(listener == null){
 			logger.error("分布式锁Listener不能为空!");
 			throw new IllegalArgumentException("分布式锁Listener不能为空!");
@@ -170,11 +170,11 @@ public class ZkClientDistributedLock implements DistributedLock {
 		
 	}
 
-	public void getLock(IListener listener) throws Exception {
+	public void getLock(IZookeeperListener listener) throws Exception {
 		changeListener(listener);
 	}
 
-	public void addListener(IListener listener) throws IllegalArgumentException {
+	public void addListener(IZookeeperListener listener) throws IllegalArgumentException {
 		if(listener == null){
 			logger.error("分布式锁Listener不能为空!");
 			throw new IllegalArgumentException("分布式锁Listener不能为空!");
@@ -189,11 +189,11 @@ public class ZkClientDistributedLock implements DistributedLock {
 		this.listener = null;
 	}
 
-	public void changeListener(IListener listener) throws IllegalArgumentException {
+	public void changeListener(IZookeeperListener listener) throws IllegalArgumentException {
 		addListener(listener);
 	}
 
-	public void unLock() throws Exception {
+	public void release() throws Exception {
 		try {
 			distributedLock.unLock();
 		} catch (Exception e) {
@@ -237,7 +237,7 @@ public class ZkClientDistributedLock implements DistributedLock {
 	 * @author miles
 	 * @date 2017-03-11 下午9:24:19
 	 */
-	interface IDistributedLock extends Watcher, Runnable {
+	interface IZookeeperDistributedLock extends Watcher, Runnable {
 
 		/**
 		 * 锁处理
@@ -254,7 +254,7 @@ public class ZkClientDistributedLock implements DistributedLock {
 		public void unLock() throws Exception;
 	}
 
-	class UnfairDistributedLock implements IDistributedLock {
+	class UnfairDistributedLock implements IZookeeperDistributedLock {
 		private String unfairLockPath;
 
 		public UnfairDistributedLock() {
@@ -334,7 +334,7 @@ public class ZkClientDistributedLock implements DistributedLock {
 	 * @author miles
 	 * @date 2017-03-11 下午9:46:19
 	 */
-	class FairDistributedLock implements IDistributedLock {
+	class FairDistributedLock implements IZookeeperDistributedLock {
 		private String waitPath;
 		private String currentPath;
 		private String fairLockPath;

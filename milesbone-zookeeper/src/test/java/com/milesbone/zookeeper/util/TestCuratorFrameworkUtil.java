@@ -26,6 +26,11 @@ public class TestCuratorFrameworkUtil extends TestZookeeperUtil{
 	}
 	
 	@Test
+	public void testCreateNodeAsync() throws KeeperException, InterruptedException{
+		zookeeperUtil.createNodeAsync("/curatorzkPath/t2/t1","curatorzkPath1",Ids.OPEN_ACL_UNSAFE,CreateMode.EPHEMERAL);
+	}
+	
+	@Test
 	public void testexistNode() throws KeeperException, InterruptedException{
 		zookeeperUtil.existNode("/curatorzkPath/t1/t2",null);
 	}

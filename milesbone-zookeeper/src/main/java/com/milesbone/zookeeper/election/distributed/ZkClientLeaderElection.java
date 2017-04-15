@@ -17,8 +17,8 @@ import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.milesbone.zookeeper.election.LeaderElection;
-import com.milesbone.zookeeper.listener.IListener;
+import com.milesbone.zookeeper.election.ILeaderElection;
+import com.milesbone.zookeeper.listener.IZookeeperListener;
 import com.milesbone.zookeeper.util.ZookeeperClientUtil;
 
 /**
@@ -27,13 +27,13 @@ import com.milesbone.zookeeper.util.ZookeeperClientUtil;
  * @author miles
  * @date 2017-03-11 上午10:38:37
  */
-public class ZkClientLeaderElection implements LeaderElection, Watcher {
+public class ZkClientLeaderElection implements ILeaderElection, Watcher {
 
 	private Logger logger = LoggerFactory.getLogger(ZkClientLeaderElection.class);
 	private static final String LeaderElection_PATH = "/ZkclientLeaderElection/election";// 选举路径
 	private static final String LeaderElection_ROOT_PATH = "/ZkclientLeaderElection";// rootPath
 	private ZookeeperClientUtil zkClientUtil = null;
-	private IListener listener;
+	private IZookeeperListener listener;
 	private boolean isNew = true;
 	private CountDownLatch countDownLatch = null;
 	private AtomicBoolean runFlag = new AtomicBoolean(false);
@@ -46,7 +46,7 @@ public class ZkClientLeaderElection implements LeaderElection, Watcher {
 	public ZkClientLeaderElection() {
 	}
 
-	public ZkClientLeaderElection(IListener listener) {
+	public ZkClientLeaderElection(IZookeeperListener listener) {
 		if (listener == null) {
 			logger.error("Listener can not be null!");
 			throw new IllegalArgumentException("Listener can not be null!");

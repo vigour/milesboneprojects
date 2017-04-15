@@ -70,7 +70,7 @@
 		<curator.version>2.11.0</curator.version>
 
 		<!-- redis client -->
-		<jedis.version>2.8.0</jedis.version>
+		<jedis.version>2.8.2</jedis.version>
 		<!-- Kafka client -->
 		<kafka.client.version>0.10.0.0</kafka.client.version>
 		<!-- Distribution end -->
@@ -90,6 +90,7 @@
 		<module>milesbone-framework</module>
 		<module>milesbone-web</module>
 		<module>milesbone-common</module>
+		<module>milesbone-redis</module>
 	</modules>
 
 
@@ -309,6 +310,12 @@
 			    <groupId>org.apache.curator</groupId>
 			    <artifactId>curator-recipes</artifactId>
 			    <version>${curator.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>redis.clients</groupId>
+				<artifactId>jedis</artifactId>
+				<version>${jedis.version}</version>
 			</dependency>
 
 			<dependency>

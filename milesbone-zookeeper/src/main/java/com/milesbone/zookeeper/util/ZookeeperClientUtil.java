@@ -10,6 +10,7 @@ import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooKeeper;
+import org.apache.zookeeper.AsyncCallback;
 import org.apache.zookeeper.AsyncCallback.VoidCallback;
 import org.apache.zookeeper.Watcher.Event.EventType;
 import org.apache.zookeeper.Watcher.Event.KeeperState;
@@ -26,7 +27,7 @@ import com.milesbone.zookeeper.config.ZookeeperConfiguration;
  * @author miles
  * @date 2017-03-11 下午3:20:43
  */
-public class ZookeeperClientUtil implements Watcher, ZookeeperUtil {
+public class ZookeeperClientUtil implements Watcher, IZookeeperUtil {
 
 	private static final Logger logger = LoggerFactory.getLogger(ZookeeperClientUtil.class);
 
@@ -270,5 +271,38 @@ public class ZookeeperClientUtil implements Watcher, ZookeeperUtil {
 		return stat;
 	}
 
+	
+	public void createNodeAsync(String path, String data, List<ACL> acl, CreateMode createMode) {
+			connectedSemaphore = new CountDownLatch(1);
+			zk.create(path, "".getBytes(), acl, createMode, new IStringCallBack(), data);
+			try {
+				connectedSemaphore.await();
+			} catch (InterruptedException e) {
+				logger.error("线程等待异常:",e.getMessage());
+				e.printStackTrace();
+			}
+	}
+	/**
+	 * 创建节点异步调用
+	 * @author miles
+	 * @date 2017-03-13 下午9:40:34
+	 */
+	class IStringCallBack implements AsyncCallback.StringCallback{
+
+		public void processResult(int rc, String path, Object ctx, String name) {
+			logger.debug("执行异步调用方法...");
+			if(rc == 0){
+				logger.debug("异步执行成功Create path result: [{},{},{},real path name:{}]",rc, path, ctx, name);
+			}else{
+				logger.error("异步执行错误[{},{},{},real path name:{}]",rc, path, ctx, name);
+			}
+			connectedSemaphore.countDown();
+			logger.debug("执行异步调用方法完成");
+		}
+
+	}
 
 }
+
+
+
