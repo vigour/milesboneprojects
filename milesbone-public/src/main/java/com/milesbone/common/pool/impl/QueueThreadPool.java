@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -14,13 +15,18 @@ import com.milesbone.common.task.IPoolCallableTask;
 import com.milesbone.common.task.IPoolRunnableTask;
 import com.milesbone.common.task.IPoolTask;
 
-
+/**
+ * 线程池
+ * @author miles
+ * @date 2017-04-16 下午9:20:31
+ */
 public class QueueThreadPool {
 
 	private static final Logger logger = LoggerFactory.getLogger(QueueThreadPool.class);
 
 	private ThreadPoolExecutor executor = null;// 线程池对象
 
+	@SuppressWarnings("rawtypes")
 	private List<IPoolTask> taskList = null;// 任务项
 
 	private QueueThreadPoolMonitor monitor;// 监控项
@@ -43,6 +49,14 @@ public class QueueThreadPool {
 
 	}
 
+	
+	/**
+	 * 初始化线程池
+	 * @param poolId
+	 * @param coreThreadNum
+	 * @param maxThreadNum
+	 * @param keepAlive
+	 */
 	public void init(String poolId, int coreThreadNum, int maxThreadNum, long keepAlive) {
 		logger.info("开始启动线程池: {}", poolId);
 		this.poolId = poolId;
@@ -51,7 +65,7 @@ public class QueueThreadPool {
 		this.cacheNum = (cacheNum == 0 ? this.cacheNum : cacheNum);
 		this.keepAlive = (keepAlive == 0 ? this.keepAlive : keepAlive);
 		executor = new ThreadPoolExecutor(coreThreadNum, maxThreadNum, keepAlive, TimeUnit.MILLISECONDS,
-				new ArrayBlockingQueue<Runnable>(cacheNum), new ThreadPoolExecutor.CallerRunsPolicy());
+				new LinkedBlockingQueue<Runnable>(cacheNum), new ThreadPoolExecutor.CallerRunsPolicy());
 
 	}
 	
@@ -59,7 +73,7 @@ public class QueueThreadPool {
 	 * 提交任务 带监控时间
 	 * @param task
 	 */
-	public void excute(IPoolRunnableTask task){
+	public void excute(IPoolRunnableTask<?> task){
 		synchronized (taskList) {
 			if(executor != null)
 				executor.execute(task);
@@ -72,7 +86,7 @@ public class QueueThreadPool {
 	 * 提交任务不监控超时
 	 * @param task
 	 */
-	public void executeWithOutTimeout(IPoolRunnableTask task) {
+	public void executeWithOutTimeout(IPoolRunnableTask<?> task) {
 		synchronized (taskList) {
 			executor.execute(task);
 			if(executor != null)
@@ -86,10 +100,10 @@ public class QueueThreadPool {
 	 * @param task
 	 * @return
 	 */
-	public Future submit(IPoolRunnableTask task){
+	public Future<?> submit(IPoolRunnableTask<?> task){
 		synchronized (taskList) {
 			if(executor != null){
-				Future f = executor.submit(task);
+				Future<?> f = executor.submit(task);
 				taskList.add(task);
 				return f;
 			}
@@ -99,14 +113,14 @@ public class QueueThreadPool {
 	}
 	
 	/**
-	 * 提交任务
+	 * 提交任务,回调
 	 * @param task
 	 * @return
 	 */
-	public Future submit(IPoolCallableTask task){
+	public Future<?> submit(IPoolCallableTask<?, ?> task){
 		synchronized (taskList) {
 			if(executor != null){
-				Future f = executor.submit(task);
+				Future<?> f = executor.submit(task);
 				taskList.add(task);
 				return f;
 			}
@@ -118,7 +132,7 @@ public class QueueThreadPool {
 	 * 移除任务
 	 * @param task
 	 */
-	public void removeTask(IPoolTask task){
+	public void removeTask(IPoolTask<?> task){
 		synchronized (taskList) {
 			if(taskList != null)
 				taskList.remove(task);
@@ -152,6 +166,7 @@ public class QueueThreadPool {
 		this.poolId = poolId;
 	}
 
+	@SuppressWarnings("rawtypes")
 	public List<IPoolTask> getTaskList() {
 		return taskList;
 	}
@@ -193,10 +208,15 @@ public class QueueThreadPool {
 			}
 		}
 
+		
+		/**
+		 * 关闭监控器
+		 */
 		public void stop() {
 			this.runflag = false;
 		}
 
+		@SuppressWarnings({ "rawtypes", "deprecation" })
 		public void run() {
 			while (runflag) {
 				try {

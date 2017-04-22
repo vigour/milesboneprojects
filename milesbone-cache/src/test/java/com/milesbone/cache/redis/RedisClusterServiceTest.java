@@ -51,4 +51,16 @@ public class RedisClusterServiceTest extends TestCase{
 	}
 	
 	
+	@Test
+	public void testTTL(){
+		String key = "test";
+		if(cache.exist(key)){
+			
+			logger.info("获取redis服务key:{},value:{},ttl:{}",key, cache.get(key),cache.ttl(key));
+		}else{
+			logger.info("未找到相应redis的key");
+		}
+	}
+	
+	
 }
