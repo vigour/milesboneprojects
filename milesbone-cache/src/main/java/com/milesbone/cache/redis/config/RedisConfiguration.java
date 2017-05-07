@@ -1,10 +1,11 @@
 package com.milesbone.cache.redis.config;
 
-import java.io.InputStream;
 import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.milesbone.util.PropertyFileUtil;
 
 /**
  * Redis配置类
@@ -17,16 +18,31 @@ public class RedisConfiguration {
 	
 	private Properties redisProperties;
 	
+	private static final String REDIS_CONFIG_PATH = "/redis.properties";
+	
 	/**
 	 * 定义连接字符串的key
 	 */
 	public static final String REDIS_SERVERS_CONFIG = "redis.servers"; 
+	
+	
+	/**
+	 * 定义集群最多重定向次数(默认5)，
+	 */
+	public static final String REDIS_DEFAULT_MAX_REDIRECTIONS = "redis.default.max.attempts";
+	
+
+	/**
+	 * 定义redis 集群集合超时时间 默认2s
+	 */
+	public static final String REDIS_DEFAULT_CONNECTION_TIMEOUT = "redis.default.connection.timeout";
 	
 	/**
 	 * 定义默认数据有效期key
 	 * 设置默认数据有效期 ，默认30天（2592000秒）
 	 */
 	public static final String REDIS_DEFAULT_TIMEOUT_CONFIG = "redis.default.timeout";
+	
 	
 	/**
 	 *  控制一个pool最少有多少个状态为idle(空闲的)的jedis实例
@@ -71,16 +87,9 @@ public class RedisConfiguration {
 	 */
 	private void init() {
 		logger.debug("初始化redis配置文件");
-		// 加载消费者配置文件
+		// 加载redis配置文件
 		if (redisProperties == null) {
-			try {
-				redisProperties = new Properties();
-				InputStream in = this.getClass().getResourceAsStream("/redis.properties");
-				redisProperties.load(in);
-				in.close();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			redisProperties = PropertyFileUtil.load(REDIS_CONFIG_PATH);
 		}
 		logger.debug("初始化redis配置文件完成");
 	}

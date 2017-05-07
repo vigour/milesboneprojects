@@ -71,4 +71,6 @@ public interface ICache {
 	 * @return true key在缓存中存在  false key在缓存中不存在
 	 */
 	public boolean exist(String key);
+	
+	
 }

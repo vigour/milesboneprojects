@@ -1,4 +1,4 @@
-package com.milesbone.util;
+package com.milesbone.common.util;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,16 +13,11 @@ import org.slf4j.LoggerFactory;
  * @author miles
  * @date 2017-03-08 下午11:00:17
  */
-public class PropertyFileUtil {
+public class PropertyUtil {
 	
-	private static final Logger logger = LoggerFactory.getLogger(PropertyFileUtil.class);
+	private static final Logger logger = LoggerFactory.getLogger(PropertyUtil.class);
 	
 	
-	/**
-	 * 加载properties文件
-	 * @param path
-	 * @return
-	 */
 	public static Properties load(String path){
 		logger.debug("加载Properties文件方法");
 		if(StringUtils.isBlank(path)){
@@ -32,7 +27,7 @@ public class PropertyFileUtil {
 		Properties properties = new Properties();
 		InputStream inStream = null;
 		try {
-			inStream = PropertyFileUtil.class.getResourceAsStream(path);
+			inStream = PropertyUtil.class.getResourceAsStream(path);
 			properties.load(inStream);
 			inStream.close();
 		} catch (IOException e) {
@@ -42,6 +37,4 @@ public class PropertyFileUtil {
 		logger.debug("加载Properties文件方法结束");
 		return properties;
 	}
-	
-	
 }

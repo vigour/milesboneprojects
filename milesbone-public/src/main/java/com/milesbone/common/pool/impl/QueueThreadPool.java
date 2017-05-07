@@ -2,7 +2,6 @@ package com.milesbone.common.pool.impl;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -67,6 +66,7 @@ public class QueueThreadPool {
 		executor = new ThreadPoolExecutor(coreThreadNum, maxThreadNum, keepAlive, TimeUnit.MILLISECONDS,
 				new LinkedBlockingQueue<Runnable>(cacheNum), new ThreadPoolExecutor.CallerRunsPolicy());
 
+		logger.info("线程池:{}启动完成...", poolId);
 	}
 	
 	/**
@@ -149,11 +149,23 @@ public class QueueThreadPool {
 				monitor.stop();
 			}
 			
-			if(executor != null){
+			try {
+				if (!executor.awaitTermination(60, TimeUnit.SECONDS)) {
+					executor.shutdownNow();
+					if (!executor.awaitTermination(60, TimeUnit.SECONDS)){
+						logger.error("线程池停止");
+					}
+					taskList = null;
+					isStop = true;
+				}
+			} catch(Exception e){
+				e.printStackTrace();
+				logger.error("线程池停止出现错误！");
+			} finally {
 				executor.shutdownNow();
-				taskList = null;
-				isStop = true;
+				Thread.currentThread().interrupt();
 			}
+			
 		}
 	}
 	
@@ -280,5 +292,6 @@ public class QueueThreadPool {
 
 		}
 	}
+
 
 }

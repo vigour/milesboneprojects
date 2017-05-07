@@ -1,10 +1,11 @@
 package com.milesbone.queue.kafka.config;
 
-import java.io.InputStream;
 import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.milesbone.util.PropertyFileUtil;
 
 /**
  * 生产者和消费者配置文件加载
@@ -15,6 +16,12 @@ import org.slf4j.LoggerFactory;
 public class KafkaConfiguration {
 
 	private static final Logger logger = LoggerFactory.getLogger(KafkaConfiguration.class);
+	
+	private final static String COMSUMER_CONFIG_PAYH = "/consumer.properties"; 
+	
+	private final static String PRODUCER_CONFIG_PAYH = "/producer.properties"; 
+	
+	private final static String KAFKA_TOOLS_CONFIG_PAYH = "/kafkatools.properties"; 
 	
 	// 消费者属性
 	private Properties consummerProp = null;
@@ -54,42 +61,21 @@ public class KafkaConfiguration {
 		logger.debug("初始化kafka生产者配置文件");
 		// 加载消费者配置文件
 		if (consummerProp == null) {
-			try {
-				consummerProp = new Properties();
-				InputStream in = this.getClass().getResourceAsStream("/consumer.properties");
-				consummerProp.load(in);
-				in.close();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			consummerProp = PropertyFileUtil.load(COMSUMER_CONFIG_PAYH);
 		}
 		logger.debug("初始化kafka生产者配置文件完成");
 
 		// 加载生产者配置文件
 		logger.debug("初始化kafka消费者配置文件");
 		if (producerProp == null) {
-			try {
-				producerProp = new Properties();
-				InputStream in = this.getClass().getResourceAsStream("/producer.properties");
-				producerProp.load(in);
-				in.close();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			producerProp = PropertyFileUtil.load(PRODUCER_CONFIG_PAYH);
 		}
 		logger.debug("初始化kafka消费者配置文件完成");
 		
 		// 加载自定义配置文件
 		logger.debug("初始化kafka自定义配置文件");
 		if (kafkaProp == null) {
-			try {
-				kafkaProp = new Properties();
-				InputStream in = this.getClass().getResourceAsStream("/kafkatools.properties");
-				kafkaProp.load(in);
-				in.close();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			kafkaProp = PropertyFileUtil.load(KAFKA_TOOLS_CONFIG_PAYH);
 		}
 		logger.debug("初始化kafka自定义配置文件完成");
 

@@ -21,7 +21,7 @@
 		<maven.compiler.target>1.7</maven.compiler.target>
 		<maven.compiler.plugin.version>3.5.1</maven.compiler.plugin.version>
 		<maven.resources.plugin.version>3.0.1</maven.resources.plugin.version>
-
+		<maven.surefire.plugin.version>2.19</maven.surefire.plugin.version>
 		<!-- spring版本号 -->
 		<spring.version>4.2.5.RELEASE</spring.version>
 
@@ -271,31 +271,31 @@
 				<version>${commons.io.version}</version>
 			</dependency>
 
-			
+
 			<dependency>
 				<groupId>ch.qos.logback</groupId>
 				<artifactId>logback-classic</artifactId>
 				<version>${logback.version}</version>
 			</dependency>
 			<dependency>
-			  <groupId>org.slf4j</groupId>
-			  <artifactId>slf4j-api</artifactId>
-			  <version>${org.slf4j.version}</version>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-api</artifactId>
+				<version>${org.slf4j.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.slf4j</groupId>
 				<artifactId>jcl-over-slf4j</artifactId>
 				<version>${org.slf4j.version}</version>
 			</dependency>
-			<dependency>  
-			    <groupId>org.slf4j</groupId>  
-			    <artifactId>log4j-over-slf4j</artifactId>  
-			    <version>${org.slf4j.version}</version>  
-			</dependency>  
-			<dependency>  
-			    <groupId>org.slf4j</groupId>  
-			    <artifactId>jul-to-slf4j</artifactId>  
-			    <version>${org.slf4j.version}</version>  
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>log4j-over-slf4j</artifactId>
+				<version>${org.slf4j.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>jul-to-slf4j</artifactId>
+				<version>${org.slf4j.version}</version>
 			</dependency>
 
 			<dependency>
@@ -303,11 +303,11 @@
 				<artifactId>zookeeper</artifactId>
 				<version>${zookeeper.version}</version>
 			</dependency>
-			
+
 			<dependency>
-			    <groupId>org.apache.curator</groupId>
-			    <artifactId>curator-recipes</artifactId>
-			    <version>${curator.version}</version>
+				<groupId>org.apache.curator</groupId>
+				<artifactId>curator-recipes</artifactId>
+				<version>${curator.version}</version>
 			</dependency>
 
 			<dependency>
@@ -358,6 +358,38 @@
 
 	<!-- 父模块定义了plugin ,子模块如果想引入这个插件，如下声明即可，它同时又继承了父模块的配置 -->
 	<build>
+		<resources>
+			<resource>
+				<directory>src/main/resources/${env}</directory>
+				<!-- **/*.properties 是指包括根目录或子目录所有properties类型的文件 -->
+				<includes>
+					<include>**/*.properties</include>
+					<include>**/*.xml</include>
+				</includes>
+
+				<!-- 排除dev、test目录下的文件 -->
+				<excludes>
+					<exclude>DEV/*</exclude>
+					<exclude>LOCAL/*</exclude>
+					<exclude>STG/*</exclude>
+					<exclude>PRD/*</exclude>
+				</excludes>
+			</resource>
+			<resource>
+				<directory>src/main/resources</directory>
+				<!-- 包含，若没有指定则默认为 activeByDefault 标签定义的profile -->
+				<!-- <includes> -->
+				<!-- <include>${env}/*</include> -->
+				<!-- </includes> -->
+				<excludes>
+					<exclude>DEV/*</exclude>
+					<exclude>LOCAL/*</exclude>
+					<exclude>STG/*</exclude>
+					<exclude>PRD/*</exclude>
+				</excludes>
+			</resource>
+		</resources>
+
 		<pluginManagement>
 			<plugins>
 				<plugin>
@@ -376,6 +408,14 @@
 					<version>${maven.resources.plugin.version}</version>
 					<configuration>
 						<encoding>${project.build.sourceEncoding}</encoding>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-surefire-plugin</artifactId>
+					<version>${maven.surefire.plugin.version}</version>
+					<configuration>
+						<skipTests>true</skipTests>
 					</configuration>
 				</plugin>
 			</plugins>

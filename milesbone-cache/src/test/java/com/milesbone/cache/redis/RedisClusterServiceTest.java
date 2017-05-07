@@ -20,6 +20,13 @@ public class RedisClusterServiceTest extends TestCase{
 		cache = new RedisClusterImpl();
 	}
 	
+	
+	@Test
+	public void testgetCluster(){
+		RedisClusterImpl cluster = new RedisClusterImpl();
+		logger.debug(cluster.getJedisCluster().toString());
+	}
+	
 	@Test
 	public void testSave(){
 		String key = "test";
@@ -62,5 +69,8 @@ public class RedisClusterServiceTest extends TestCase{
 		}
 	}
 	
-	
+	@Override
+	protected void tearDown() throws Exception {
+		super.tearDown();
+	}
 }

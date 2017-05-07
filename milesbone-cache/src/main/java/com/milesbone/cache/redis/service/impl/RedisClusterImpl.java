@@ -1,21 +1,17 @@
 package com.milesbone.cache.redis.service.impl;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.milesbone.cache.redis.config.RedisConfiguration;
+import com.milesbone.cache.redis.IRedisConfig;
+import com.milesbone.cache.redis.config.DefaultRedisConfig;
 import com.milesbone.cache.redis.service.IRedisCache;
 
-import redis.clients.jedis.HostAndPort;
 import redis.clients.jedis.JedisCluster;
 
 /**
@@ -33,11 +29,7 @@ public class RedisClusterImpl implements IRedisCache {
 	 */
 	private JedisCluster jedisCluster;
 
-	private Properties redisProp;// redis配置文件
-
-	private String nodeList;// redis连接串
-
-	private int defaultTimeout;// 设置默认数据有效期 ，默认30天（2592000秒）
+	private IRedisConfig redisConfig;
 
 	private ReentrantLock lock = new ReentrantLock();
 
@@ -46,70 +38,38 @@ public class RedisClusterImpl implements IRedisCache {
 	 * 
 	 */
 	public RedisClusterImpl() {
-		init();
+		this(null);
 	}
 
 	/**
-	 * redis集群初始化
-	 * 
+	 * @param redisConfig
 	 */
-	private void init() {
-		logger.debug("redis 集群初始化开始...");
-		if (redisProp == null) {
-			this.redisProp = RedisConfiguration.getInstance().getRedisProperties();
+	public RedisClusterImpl(IRedisConfig redisConfig) {
+		this(redisConfig, null);
+	}
+
+	/**
+	 * @param jedisCluster
+	 */
+	public RedisClusterImpl(IRedisConfig redisConfig, JedisCluster jedisCluster) {
+		super();
+		logger.debug("redis 构造方法开始");
+		if (redisConfig == null) {
+			redisConfig = new DefaultRedisConfig();
 		}
-		if (nodeList == null) {
-			this.nodeList = this.redisProp.getProperty(RedisConfiguration.REDIS_SERVERS_CONFIG);
-		}
-		if (defaultTimeout == 0) {
-			this.defaultTimeout = Integer
-					.parseInt(redisProp.getProperty(RedisConfiguration.REDIS_DEFAULT_TIMEOUT_CONFIG, "2592000"));
-		}
-		Set<HostAndPort> nodesList = this.parseHostAndPort(nodeList);
+		this.redisConfig = redisConfig;
 
 		lock.lock();
-
-		GenericObjectPoolConfig poolConfig = new GenericObjectPoolConfig();
-		poolConfig.setMinIdle(
-				Integer.parseInt(redisProp.getProperty(RedisConfiguration.REDIS_POOL_MIN_IDEL_CONFIG, "50")));
-		poolConfig.setMaxIdle(
-				Integer.parseInt(redisProp.getProperty(RedisConfiguration.REDIS_POOL_MAX_IDEL_CONFIG, "100")));
-		poolConfig.setMaxTotal(
-				Integer.parseInt(redisProp.getProperty(RedisConfiguration.REDIS_POOL_MAX_TOTAL_CONFIG, "1000")));
-		poolConfig.setMaxWaitMillis(
-				Long.parseLong(redisProp.getProperty(RedisConfiguration.REDIS_POOL_MAX_TIMEOUT_CONFIG, "180000")));
-
-		this.jedisCluster = new JedisCluster(nodesList, poolConfig);
-
+		if (jedisCluster == null) {
+			logger.debug("redis 集群初始化开始...");
+			jedisCluster = new JedisCluster(redisConfig.getNodes(), redisConfig.getConnectionTimeout(),
+					redisConfig.getMaxAttempts(), redisConfig.getPoolconfig());
+			logger.debug("redis 集群初始化完成");
+		}
 		lock.unlock();
-		logger.debug("redis 集群初始化完成");
-	}
-
-	/**
-	 * 解析redis服务器连接串
-	 * 
-	 * @param redisNodes
-	 * @return
-	 * @throws Exception
-	 */
-	private Set<HostAndPort> parseHostAndPort(String redisNodes) {
-		if (StringUtils.isBlank(redisNodes)) {
-			logger.error("参数redisNodes不能为空");
-			throw new IllegalArgumentException("参数redisNodes不能为空");
-		}
-		Set<HostAndPort> nodesList = new HashSet<>();
-		try {
-			String[] redisnode = redisNodes.split(",");
-			for (int i = 0; i < redisnode.length; i++) {
-				String[] split = redisnode[i].split(":");
-				HostAndPort hostPort = new HostAndPort(split[0], Integer.parseInt(split[1]));
-				nodesList.add(hostPort);
-			}
-		} catch (Exception e) {
-			logger.error("字符串解析失败,请检查参数格式:{}", redisNodes);
-			e.printStackTrace();
-		}
-		return nodesList;
+		
+		this.jedisCluster = jedisCluster;
+		logger.debug("redis 构造方法完成...");
 	}
 
 	/*
@@ -118,10 +78,9 @@ public class RedisClusterImpl implements IRedisCache {
 	 * @see com.milesbone.common.cache.ICache#save(java.lang.String,
 	 * java.lang.String)
 	 */
-
 	public boolean save(String key, String value) {
 		if (!this.jedisCluster.exists(key)) {
-			return this.jedisCluster.setex(key, defaultTimeout, value).equals("OK") ? true : false;
+			return this.jedisCluster.setex(key, redisConfig.getDataExpireTime(), value).equals("OK") ? true : false;
 		}
 		return false;
 	}
@@ -148,7 +107,7 @@ public class RedisClusterImpl implements IRedisCache {
 	 */
 
 	public boolean saveOrUpdate(String key, String value) {
-		return this.jedisCluster.setex(key, defaultTimeout, value).equals("OK") ? true : false;
+		return this.jedisCluster.setex(key, redisConfig.getDataExpireTime(), value).equals("OK") ? true : false;
 	}
 
 	/*
@@ -414,5 +373,24 @@ public class RedisClusterImpl implements IRedisCache {
 	public void expire(byte[] key, int seconds) {
 		this.jedisCluster.expire(key, seconds);
 	}
+
+	
+	
+	public IRedisConfig getRedisConfig() {
+		return redisConfig;
+	}
+
+	public void setRedisConfig(IRedisConfig redisConfig) {
+		this.redisConfig = redisConfig;
+	}
+
+	public void setJedisCluster(JedisCluster jedisCluster) {
+		this.jedisCluster = jedisCluster;
+	}
+	
+	public JedisCluster getJedisCluster() {
+		return jedisCluster;
+	}
+
 
 }
