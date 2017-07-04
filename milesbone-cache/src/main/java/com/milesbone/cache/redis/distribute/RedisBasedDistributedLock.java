@@ -2,12 +2,14 @@ package com.milesbone.cache.redis.distribute;
 
 import java.io.IOException;
 import java.net.SocketAddress;
+import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.milesbone.cache.redis.config.RedisConfiguration;
 import com.milesbone.common.clinet.impl.TimeClient;
 import com.milesbone.common.distribute.lock.AbstractLock;
 
@@ -36,12 +38,12 @@ public class RedisBasedDistributedLock extends AbstractLock {
 	/**
 	 * 锁的key
 	 */
-	private String key;
+	protected  String key;
 
 	/**
 	 * 锁超时时间
 	 */
-	private long expire;
+	protected  long lockExpire;
 
 	/**
 	 * @throws IOException
@@ -51,45 +53,190 @@ public class RedisBasedDistributedLock extends AbstractLock {
 		this(null, null, 0, null);
 	}
 
+	
+	
+	
+	/**
+	 * @param jedisCluster
+	 * @throws IOException 
+	 */
+	public RedisBasedDistributedLock(JedisCluster jedisCluster) throws IOException {
+		this(jedisCluster, null, 0, null);
+	}
+
+
+
+
 	/**
 	 * @param jedisCluster
 	 * @param key
 	 * @param expire
 	 * @throws IOException
 	 */
-	public RedisBasedDistributedLock(JedisCluster jedisCluster, String key, long expire, SocketAddress timeServerAddr)
+	public RedisBasedDistributedLock(JedisCluster jedisCluster, String key, long lockExpire, SocketAddress timeServerAddr)
 			throws IOException {
 		super();
 		logger.debug("初始化redis分布式锁开始...");
+		
+		if(jedisCluster == null){
+			logger.error("初始化redis分布式锁异常: jedisCluster参数未设置");
+			throw new IllegalArgumentException("jedisCluster参数未设置");
+		}
+		this.jedisCluster = jedisCluster;
+		
+		Properties redisProp = RedisConfiguration.getInstance().getRedisProperties(); 
+		
 		if (StringUtils.isBlank(key)) {
-			
+			key = redisProp.getProperty(RedisConfiguration.REDIS_DEFAULT_LOCK_KEY, "redisLockKey");
 		}
 		this.key = key;
-		this.jedisCluster = jedisCluster;
-		this.expire = expire;
-		timeClient = new TimeClient(timeServerAddr);
+		
+		if(lockExpire == 0){
+			lockExpire = Long.parseLong(redisProp.getProperty(RedisConfiguration.REDIS_DEFAULT_LOCK_EXPIRE_TIME, "1000"));
+		}
+		this.lockExpire = lockExpire;
+		
+		if(timeServerAddr == null){
+			timeClient = new TimeClient(timeServerAddr);
+		}
 		logger.debug("初始化redis分布式锁完成");
 	}
 
 	public boolean tryLock() {
-		// TODO Auto-generated method stub
+		long lockExpireTime = serverTimeMillis() + lockExpire + 1;//锁超时时间
+		String stringoflockExpireTime = String.valueOf(lockExpireTime);
+		if(jedisCluster.setnx(key, stringoflockExpireTime) == 1){//成功获取到锁
+			locked = true;
+			setExclusiveOwnerThread(Thread.currentThread());
+			return true;
+		}
+		
+		String value = jedisCluster.get(key);
+		if(value != null && isTimeExpired(value)){
+			// 假设多个线程(非单jvm)同时走到这里
+			String oldValue = jedisCluster.getSet(key, stringoflockExpireTime);
+			// 但是走到这里时每个线程拿到的oldValue肯定不可能一样(因为getset是原子性的)  
+            // 假如拿到的oldValue依然是expired的，那么就说明拿到锁了
+			if(oldValue != null && isTimeExpired(oldValue)){
+				locked = true;
+				setExclusiveOwnerThread(Thread.currentThread());
+				return true;
+			}
+		}else{
+			// TODO lock is not expired, enter next loop retrying  
+		}
+		
 		return false;
 	}
 
-	public void release() {
-		// TODO Auto-generated method stub
+	
+	private boolean isTimeExpired(String value) {
+		return Long.parseLong(value) < serverTimeMillis();
+	}
 
+	public void release() {
+		try {
+			jedisCluster.close();
+			timeClient.close();
+		} catch (Exception e) {
+			logger.error("操作释放所有资源失败");
+			e.printStackTrace();
+		}
 	}
 
 	protected void releaseLock() {
-		// TODO Auto-generated method stub
+		String value = jedisCluster.get(key);
+		//TODO 判断锁是否过期
+		if(StringUtils.isBlank(value)){
+			return;
+		}
+		if(isTimeExpired(value)){
+			doReleaseLock();
+		}
+	}
 
+	private void doReleaseLock() {
+		logger.debug("释放redis锁开始...");
+		jedisCluster.del(key);
+		logger.debug("释放redis 锁完成");
 	}
 
 	protected boolean lock(boolean useTimeout, long time, TimeUnit unit, boolean interrupt)
 			throws InterruptedException {
-		// TODO Auto-generated method stub
+		if(interrupt){
+			checkInterruption(); 
+		}
+		// 超时控制 的时间可以从本地获取, 因为这个和锁超时没有关系, 只是一段时间区间的控制  
+		long start = this.localTimeMillis();
+		
+		long timeout = unit.toMillis(time);
+		
+		while (useTimeout ? isTimeout(start, timeout) : true) {
+			if(interrupt){
+				checkInterruption(); 
+			}
+			
+			long lockExpireTime = serverTimeMillis() + lockExpire + 1;//锁超时时间
+			String stringoflockExpireTime = String.valueOf(lockExpireTime);
+			if(jedisCluster.setnx(key, stringoflockExpireTime) == 1){//成功获取到锁
+				locked = true;
+				setExclusiveOwnerThread(Thread.currentThread());
+				return true;
+			}
+			
+			String value = jedisCluster.get(key);
+			if(value != null && isTimeExpired(value)){
+				// 假设多个线程(非单jvm)同时走到这里
+				String oldValue = jedisCluster.getSet(key, stringoflockExpireTime);
+				// 但是走到这里时每个线程拿到的oldValue肯定不可能一样(因为getset是原子性的)  
+	            // 假如拿到的oldValue依然是expired的，那么就说明拿到锁了
+				if(oldValue != null && isTimeExpired(oldValue)){
+					locked = true;
+					setExclusiveOwnerThread(Thread.currentThread());
+					return true;
+				}
+			}else{
+				// TODO lock is not expired, enter next loop retrying  
+			}
+		}
+		
+		
 		return false;
+	}
+	
+	
+	
+	
+	private boolean isTimeout(long start, long timeout) {
+		return start + timeout > localTimeMillis();
+	}
+
+	/**
+	 * 判断线程是否被阻塞
+	 * @throws InterruptedException
+	 */
+	private void checkInterruption() throws InterruptedException {
+		if(Thread.currentThread().isInterrupted()){
+			logger.error("线程已被阻塞{}", Thread.currentThread().getName());
+			throw new InterruptedException();
+		}
+	}
+
+	/**
+	 * 获取服务器当前时间
+	 * @return
+	 */
+	private long serverTimeMillis(){
+		return timeClient.currentTimeMillis();
+	}
+	
+	
+	/**
+	 * 获取本地服务器时间
+	 * @return
+	 */
+	private long localTimeMillis(){
+		return System.currentTimeMillis();
 	}
 
 	public final void setJedisCluster(JedisCluster jedisCluster) {
@@ -104,8 +251,7 @@ public class RedisBasedDistributedLock extends AbstractLock {
 		this.key = key;
 	}
 
-	public final void setExpire(long expire) {
-		this.expire = expire;
+	public void setLockExpire(long lockExpire) {
+		this.lockExpire = lockExpire;
 	}
-
 }

@@ -20,55 +20,64 @@ import redis.clients.jedis.JedisCluster;
  * @author miles
  * @date 2017-03-26 下午11:51:33
  */
-public class RedisClusterImpl implements IRedisCache {
+public class RedisClusterCacheImpl implements IRedisCache {
 
-	private static final Logger logger = LoggerFactory.getLogger(RedisClusterImpl.class);
+	private static final Logger logger = LoggerFactory.getLogger(RedisClusterCacheImpl.class);
 
 	/**
 	 * jedis集群操作对象
 	 */
 	private JedisCluster jedisCluster;
-
-	private IRedisConfig redisConfig;
-
-	private ReentrantLock lock = new ReentrantLock();
+	
+	/**
+	 * 设置默认数据有效期 ，默认30天（2592000秒）
+	 */
+	private Integer dataExpireTime;
 
 	/**
 	 *  
 	 * 
 	 */
-	public RedisClusterImpl() {
+	public RedisClusterCacheImpl() {
 		this(null);
-	}
-
-	/**
-	 * @param redisConfig
-	 */
-	public RedisClusterImpl(IRedisConfig redisConfig) {
-		this(redisConfig, null);
 	}
 
 	/**
 	 * @param jedisCluster
 	 */
-	public RedisClusterImpl(IRedisConfig redisConfig, JedisCluster jedisCluster) {
-		super();
-		logger.debug("redis 构造方法开始");
-		if (redisConfig == null) {
-			redisConfig = new DefaultRedisConfig();
-		}
-		this.redisConfig = redisConfig;
+	public RedisClusterCacheImpl(JedisCluster jedisCluster) {
+		this(jedisCluster, 0);
+	}
 
-		lock.lock();
+	
+	
+	
+	/**
+	 * @param jedisCluster
+	 * @param dataExpireTime
+	 */
+	public RedisClusterCacheImpl(JedisCluster jedisCluster, Integer dataExpireTime) {
+		super();
+		logger.debug("RedisClusterCache 构造方法开始");
+		
+		IRedisConfig redisConfig = new DefaultRedisConfig();
+		
+		if(dataExpireTime == null || dataExpireTime == 0){
+			dataExpireTime = redisConfig.getDataExpireTime();
+		}
+		this.dataExpireTime = dataExpireTime;
+		
 		if (jedisCluster == null) {
+			ReentrantLock lock = new ReentrantLock();
+			lock.lock();
 			logger.debug("redis 集群初始化开始...");
 			jedisCluster = new JedisCluster(redisConfig.getNodes(), redisConfig.getConnectionTimeout(),
 					redisConfig.getMaxAttempts(), redisConfig.getPoolconfig());
 			logger.debug("redis 集群初始化完成");
+			lock.unlock();
 		}
-		lock.unlock();
-		
 		this.jedisCluster = jedisCluster;
+		
 		logger.debug("redis 构造方法完成...");
 	}
 
@@ -80,7 +89,7 @@ public class RedisClusterImpl implements IRedisCache {
 	 */
 	public boolean save(String key, String value) {
 		if (!this.jedisCluster.exists(key)) {
-			return this.jedisCluster.setex(key, redisConfig.getDataExpireTime(), value).equals("OK") ? true : false;
+			return this.jedisCluster.setex(key, dataExpireTime, value).equals("OK") ? true : false;
 		}
 		return false;
 	}
@@ -107,7 +116,7 @@ public class RedisClusterImpl implements IRedisCache {
 	 */
 
 	public boolean saveOrUpdate(String key, String value) {
-		return this.jedisCluster.setex(key, redisConfig.getDataExpireTime(), value).equals("OK") ? true : false;
+		return this.jedisCluster.setex(key, dataExpireTime, value).equals("OK") ? true : false;
 	}
 
 	/*
@@ -374,23 +383,33 @@ public class RedisClusterImpl implements IRedisCache {
 		this.jedisCluster.expire(key, seconds);
 	}
 
-	
-	
-	public IRedisConfig getRedisConfig() {
-		return redisConfig;
+	public void close() {
+		try {
+			if (jedisCluster != null) {
+				logger.debug("开始关闭缓存");
+				jedisCluster.close();
+				logger.debug("关闭缓存完成");
+			}
+		} catch (Exception e) {
+			logger.error("缓存连接关闭失败");
+		}
 	}
 
-	public void setRedisConfig(IRedisConfig redisConfig) {
-		this.redisConfig = redisConfig;
+
+	public Integer getDataExpireTime() {
+		return dataExpireTime;
+	}
+
+	public void setDataExpireTime(Integer dataExpireTime) {
+		this.dataExpireTime = dataExpireTime;
 	}
 
 	public void setJedisCluster(JedisCluster jedisCluster) {
 		this.jedisCluster = jedisCluster;
 	}
-	
+
 	public JedisCluster getJedisCluster() {
 		return jedisCluster;
 	}
-
 
 }

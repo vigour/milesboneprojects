@@ -33,10 +33,10 @@
         <dependent-module archiveName="milesbone-warehouse-1.0-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/milesbone-warehouse/milesbone-warehouse">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="milesbone-zookeeper-1.0-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/milesbone-zookeeper/milesbone-zookeeper">
+        <dependent-module archiveName="milesbone-messagequeue-1.0-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/milesbone-messagequeue/milesbone-messagequeue">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="milesbone-messagequeue-1.0-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/milesbone-messagequeue/milesbone-messagequeue">
+        <dependent-module archiveName="milesbone-zookeeper-1.0-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/milesbone-zookeeper/milesbone-zookeeper">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <property name="context-root" value="milesbone-web"/>

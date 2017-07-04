@@ -15,12 +15,19 @@
 	<url>http://maven.apache.org</url>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<junit.version>4.12</junit.version>
 	</properties>
 	<dependencies>
+	
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>com.milesbone</groupId>
+			<artifactId>milesbone-test</artifactId>
+			<version>${project.version}</version>
 			<scope>test</scope>
 		</dependency>
 
@@ -29,6 +36,6 @@
 			<artifactId>milesbone-public</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		
+
 	</dependencies>
 </project>

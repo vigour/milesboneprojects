@@ -63,7 +63,7 @@ public class TimeServerConfiguration {
 		/**
 		 * 默认的主机key
 		 */
-		DEFAULT_HOST_NAME("time.server.hostname","localhost"),
+		DEFAULT_HOST_NAME("time.server.hostname","127.0.0.1"),
 		
 		/**
 		 * 默认的端口key

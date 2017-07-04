@@ -46,7 +46,7 @@ public abstract class AbstractLock implements ILock {
 
 	public boolean tryLock(long time, TimeUnit unit) {
 		try {
-			return lock(true, 0, null, false);
+			return lock(true, time, unit, false);
 		} catch (InterruptedException e) {
 			logger.error("获取分布式锁失败{}",e);
 			e.printStackTrace();

@@ -22,6 +22,8 @@
 		<maven.compiler.plugin.version>3.5.1</maven.compiler.plugin.version>
 		<maven.resources.plugin.version>3.0.1</maven.resources.plugin.version>
 		<maven.surefire.plugin.version>2.19</maven.surefire.plugin.version>
+		<maven.dependency.plugin.version>3.0.0</maven.dependency.plugin.version>
+		
 		<!-- spring版本号 -->
 		<spring.version>4.2.5.RELEASE</spring.version>
 
@@ -417,6 +419,11 @@
 					<configuration>
 						<skipTests>true</skipTests>
 					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-dependency-plugin</artifactId>
+					<version>${maven.dependency.plugin.version}</version>
 				</plugin>
 			</plugins>
 		</pluginManagement>

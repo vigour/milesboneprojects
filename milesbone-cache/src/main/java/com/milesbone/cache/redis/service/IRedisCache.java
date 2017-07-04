@@ -128,4 +128,10 @@ public interface IRedisCache extends ICache{
 	 */
 	public void expire(byte[] key, int seconds);
 	
+	
+	/**
+	 * 关闭jediscluster
+	 */
+	public void close();
+	
 }

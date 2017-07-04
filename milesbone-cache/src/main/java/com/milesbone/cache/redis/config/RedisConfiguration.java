@@ -66,6 +66,17 @@ public class RedisConfiguration {
 	
 	
 	public static final String REDIS_POOL_TEST_ON_BORROW = "redis.pool.testOnBorrow";
+	
+	/**
+	 * redis 默认锁的key
+	 */
+	public static final String REDIS_DEFAULT_LOCK_KEY = "redis.default.lock.key";
+	
+	/**
+	 * redis 默认锁失效时间
+	 */
+	public static final String REDIS_DEFAULT_LOCK_EXPIRE_TIME = "redis.default.lock.expireTime";
+	
 	/**
 	 * @param redisProperties
 	 */

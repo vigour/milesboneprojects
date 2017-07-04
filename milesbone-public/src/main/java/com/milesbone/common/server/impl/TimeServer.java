@@ -8,10 +8,14 @@ import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.Iterator;
+import java.util.Properties;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.milesbone.common.config.TimeServerConfiguration;
+import com.milesbone.common.config.TimeServerConfiguration.Configuration;
 import com.milesbone.common.server.IServer;
 
 /**
@@ -20,7 +24,7 @@ import com.milesbone.common.server.IServer;
  * @author miles
  * @date 2017-05-01 下午4:14:58
  */
-public class TimeServer implements IServer{
+public class TimeServer implements IServer,Runnable{
 
 	private static final Logger logger = LoggerFactory.getLogger(TimeServer.class);
 
@@ -29,6 +33,10 @@ public class TimeServer implements IServer{
 	private Selector selector;
 
 	private volatile boolean alive = true;
+	
+	private String hostname;//服务的IP
+	
+	private String port;//服务端口
 
 	private static final String TIME_CMD = "time";
 
@@ -43,12 +51,52 @@ public class TimeServer implements IServer{
 		super();
 	}
 
+	
+	
+	/**
+	 * @param hostname
+	 * @param port
+	 */
+	public TimeServer(String hostname, String port) {
+		super();
+		this.hostname = hostname;
+		this.port = port;
+	}
+
+
+
+
+	public void start() throws Exception {
+		
+		start(hostname,0);
+		
+	}
+	
 	public void start(int port) throws IOException {
+		start(this.hostname,port);
+	}
+	
+	public void start(String hostname, int port) throws IOException {
+		if(port < 0 || port > 65535){
+			logger.error("服务器端口参数不合法,值应在0到65535之间,实际值为{}", port);
+			throw new IllegalArgumentException("服务器端口参数不合法");
+		}
+		Properties timePorp = TimeServerConfiguration.getInstance().getTimeServerProp();
+		
+		if(StringUtils.isBlank(hostname)){
+			hostname = timePorp.getProperty(Configuration.DEFAULT_HOST_NAME.getKey(), Configuration.DEFAULT_HOST_NAME.getValue());
+		}
+		
+		if(port == 0){
+			port = Integer.parseInt(timePorp.getProperty(Configuration.DEFAULT_PORT.getKey(), Configuration.DEFAULT_PORT.getValue()));
+		}
+		
+		logger.info("正在启动时间服务器服务..");
 		selector = Selector.open();
 
 		serverChannel = ServerSocketChannel.open();
 		serverChannel.configureBlocking(false);
-		serverChannel.bind(new InetSocketAddress(port));
+		serverChannel.bind(new InetSocketAddress(hostname, port));
 		// interested only in accept event
 		serverChannel.register(selector, SelectionKey.OP_ACCEPT);
 
@@ -236,11 +284,7 @@ public class TimeServer implements IServer{
 		return true;
 	}
 
-	@Override
-	public void start() throws Exception {
-		// TODO Auto-generated method stub
-		
-	}
+	
 
 
 	@Override
@@ -248,4 +292,30 @@ public class TimeServer implements IServer{
 		// TODO Auto-generated method stub
 		
 	}
+
+	public String getHostname() {
+		return hostname;
+	}
+
+	public void setHostname(String hostname) {
+		this.hostname = hostname;
+	}
+
+	public String getPort() {
+		return port;
+	}
+
+	public void setPort(String port) {
+		this.port = port;
+	}
+
+	public void run() {
+		try {
+			start();
+		} catch (Exception e) {
+			logger.error("线程启动失败");
+			e.printStackTrace();
+		}
+	}
+	
 }

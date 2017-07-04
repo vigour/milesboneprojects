@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd">
+
+	<!-- id生成器配置 -->
+	<bean id="idGeneratorConfig" class="com.milesbone.generator.config.DefaultIdGeneratorConfig"></bean>
+	<!-- ID生成器实现类 -->
+	<bean id="idGenerator" class="com.milesbone.generator.impl.DistributeLockIdGenerator">
+		<constructor-arg name="config" ref="idGeneratorConfig"/>
+		<constructor-arg name="lock" ref="distributedLock"/>
+	</bean>
+</beans>
