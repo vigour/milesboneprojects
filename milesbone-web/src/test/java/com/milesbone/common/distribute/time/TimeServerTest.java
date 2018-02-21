@@ -7,9 +7,9 @@ import javax.annotation.Resource;
 import org.junit.Test;
 
 import com.milesbone.common.clinet.impl.TimeClient;
-import com.milesbone.common.test.base.AbstactBeanTestCase;
+import com.milesbone.common.test.base.AbstactServerBeanTestCase;
 
-public class TimeServerTest extends AbstactBeanTestCase{
+public class TimeServerTest extends AbstactServerBeanTestCase{
 
 	@Resource(name="timeClient")
 	private TimeClient client;

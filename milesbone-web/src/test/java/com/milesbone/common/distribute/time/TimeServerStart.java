@@ -13,8 +13,15 @@ import com.milesbone.common.server.impl.TimeServer;
 public class TimeServerStart {
 
 	public static void main(String[] args) throws IOException {
+//		Thread thread = new Thread(new TimeServer());
+//        try {
+//        	thread.setDaemon(true);
+//        	thread.start();
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+		
 		TimeServer thread = new TimeServer();
-
 			thread.start(19999);
 	}
 }
