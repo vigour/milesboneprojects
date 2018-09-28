@@ -6,9 +6,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.milesbone.util.PropertyFileUtil;
+import com.milesbone.zookeeper.IZookeeperConfig;
 
 
-public class ZookeeperConfiguration {
+public class ZookeeperConfiguration implements IZookeeperConfig{
 	
 	private static  final Logger logger = LoggerFactory.getLogger(ZookeeperConfiguration.class);
 
@@ -40,6 +41,10 @@ public class ZookeeperConfiguration {
 
 	public Properties getZookeeperProp() {
 		return zookeeperProp;
+	}
+
+	public Properties getProp() {
+		return getZookeeperProp();
 	}
 
 	

@@ -322,4 +322,8 @@ public class SpringResourceRedisConfig implements IRedisConfig {
 		this.poolconfig = poolconfig;
 	}
 
+	public Properties getProp() {
+		return RedisConfiguration.getInstance().getProp();
+	}
+
 }
