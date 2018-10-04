@@ -64,6 +64,15 @@
 		<logback.version>1.1.7</logback.version>
 		<org.slf4j.version>1.7.21</org.slf4j.version>
 
+		<!-- dyuproject protostuff -->
+		<dyuproject.protostuff.version>1.0.12</dyuproject.protostuff.version>
+		
+		<!-- objenesis -->
+		<objenesis.version>2.6</objenesis.version>
+		
+		<!-- ehcache -->
+		<ehcache.version>2.10.4</ehcache.version>
+		
 		<!-- Distribution start -->
 
 		<!-- zookeeper -->
@@ -77,7 +86,45 @@
 		<kafka.client.version>0.10.0.0</kafka.client.version>
 		<!-- Distribution end -->
 	</properties>
-
+	
+	<!-- 配置仓库 -->
+	<repositories>
+        <repository>
+            <id>nexus</id>
+            <name>Develop Maven Repository</name>
+            <url>http://master.milesbone.com:8081/repository/maven-public/</url>
+        </repository>
+	</repositories>
+	
+	<!-- 配置插件 -->
+	<pluginRepositories>
+        <pluginRepository>
+            <id>nexus</id>
+            <name>Develop Plugin Repository</name>
+            <url>http://master.milesbone.com:8081/repository/maven-public/</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </pluginRepository>
+	</pluginRepositories>
+	
+	<!-- 配置distributionManagement -->
+	<distributionManagement>
+        <repository>
+            <id>nexus-releases</id>
+            <name>Releases</name>
+            <url>http://master.milesbone.com:8081/repository/maven-releases</url>
+        </repository>
+        <snapshotRepository>
+            <id>nexus-snapshots</id>
+            <name>Snapshot</name>
+            <url>http://master.milesbone.com:8081/repository/maven-snapshots</url>
+        </snapshotRepository>
+	</distributionManagement>
+	
 	<modules>
 		<module>milesbone-domain</module>
 		<module>milesbone-dao</module>
@@ -168,7 +215,12 @@
 				<artifactId>spring-aspects</artifactId>
 				<version>${spring.version}</version>
 			</dependency>
-
+			<dependency>
+				<groupId>org.springframework</groupId>
+			    <artifactId>spring-context-support</artifactId>
+			    <version>${spring.version}</version>
+			</dependency>
+			
 			<dependency>
 				<groupId>org.springframework.security</groupId>
 				<artifactId>spring-security-web</artifactId>
@@ -299,7 +351,30 @@
 				<artifactId>jul-to-slf4j</artifactId>
 				<version>${org.slf4j.version}</version>
 			</dependency>
+			
+			<dependency>
+				<groupId>com.dyuproject.protostuff</groupId>
+				<artifactId>protostuff-core</artifactId>
+				<version>${dyuproject.protostuff.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.dyuproject.protostuff</groupId>
+				<artifactId>protostuff-runtime</artifactId>
+				<version>${dyuproject.protostuff.version}</version>
+			</dependency>
 
+			<dependency>
+		    	<groupId>org.objenesis</groupId>
+			    <artifactId>objenesis</artifactId>
+			    <version>${objenesis.version}</version>
+			</dependency>
+			
+			<dependency>
+		      <groupId>net.sf.ehcache</groupId>
+		      <artifactId>ehcache</artifactId>
+		      <version>${ehcache.version}</version>
+		    </dependency>
+			
 			<dependency>
 				<groupId>org.apache.zookeeper</groupId>
 				<artifactId>zookeeper</artifactId>

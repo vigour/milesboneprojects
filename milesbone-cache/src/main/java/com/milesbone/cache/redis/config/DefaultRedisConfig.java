@@ -362,4 +362,9 @@ public class DefaultRedisConfig implements IRedisConfig {
 		}
 		return nodesList;
 	}
+
+	@Override
+	public Properties getProp() {
+		return null;
+	}
 }

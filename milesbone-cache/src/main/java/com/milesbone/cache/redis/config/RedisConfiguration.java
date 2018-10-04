@@ -5,6 +5,7 @@ import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.milesbone.common.config.IConfiguration;
 import com.milesbone.util.PropertyFileUtil;
 
 /**
@@ -12,7 +13,7 @@ import com.milesbone.util.PropertyFileUtil;
  * @author miles
  * @date 2017-03-25 下午9:07:40
  */
-public class RedisConfiguration {
+public class RedisConfiguration implements IConfiguration{
 
 	private static final Logger logger = LoggerFactory.getLogger(RedisConfiguration.class);
 	
@@ -107,6 +108,10 @@ public class RedisConfiguration {
 
 
 	public Properties getRedisProperties() {
+		return redisProperties;
+	}
+	
+	public Properties getProp() {
 		return redisProperties;
 	}
 	

@@ -5,6 +5,8 @@ import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.milesbone.common.config.IConfiguration;
+import com.milesbone.queue.kafka.IKafkaConfig;
 import com.milesbone.util.PropertyFileUtil;
 
 /**
@@ -13,15 +15,15 @@ import com.milesbone.util.PropertyFileUtil;
  * @author miles
  * @date 2016-08-22 下午10:17:11
  */
-public class KafkaConfiguration {
+public class KafkaConfiguration implements IKafkaConfig{
 
 	private static final Logger logger = LoggerFactory.getLogger(KafkaConfiguration.class);
 	
-	private final static String COMSUMER_CONFIG_PAYH = "/consumer.properties"; 
+	private final static String COMSUMER_CONFIG_PATH = "/consumer.properties"; 
 	
-	private final static String PRODUCER_CONFIG_PAYH = "/producer.properties"; 
+	private final static String PRODUCER_CONFIG_PATH = "/producer.properties"; 
 	
-	private final static String KAFKA_TOOLS_CONFIG_PAYH = "/kafkatools.properties"; 
+	private final static String KAFKA_TOOLS_CONFIG_PATH = "/kafkatools.properties"; 
 	
 	// 消费者属性
 	private Properties consummerProp = null;
@@ -58,24 +60,24 @@ public class KafkaConfiguration {
 	}
 
 	private void init() {
-		logger.debug("初始化kafka生产者配置文件");
 		// 加载消费者配置文件
-		if (consummerProp == null) {
-			consummerProp = PropertyFileUtil.load(COMSUMER_CONFIG_PAYH);
-		}
-		logger.debug("初始化kafka生产者配置文件完成");
-
-		// 加载生产者配置文件
 		logger.debug("初始化kafka消费者配置文件");
-		if (producerProp == null) {
-			producerProp = PropertyFileUtil.load(PRODUCER_CONFIG_PAYH);
+		if (consummerProp == null) {
+			consummerProp = PropertyFileUtil.load(COMSUMER_CONFIG_PATH);
 		}
 		logger.debug("初始化kafka消费者配置文件完成");
+
+		// 加载生产者配置文件
+		logger.debug("初始化kafka生产者配置文件");
+		if (producerProp == null) {
+			producerProp = PropertyFileUtil.load(PRODUCER_CONFIG_PATH);
+		}
+		logger.debug("初始化kafka生产者配置文件完成");
 		
 		// 加载自定义配置文件
 		logger.debug("初始化kafka自定义配置文件");
 		if (kafkaProp == null) {
-			kafkaProp = PropertyFileUtil.load(KAFKA_TOOLS_CONFIG_PAYH);
+			kafkaProp = PropertyFileUtil.load(KAFKA_TOOLS_CONFIG_PATH);
 		}
 		logger.debug("初始化kafka自定义配置文件完成");
 
@@ -91,6 +93,10 @@ public class KafkaConfiguration {
 
 	public Properties getKafkaProp() {
 		return kafkaProp;
+	}
+
+	public Properties getProp() {
+		return null;
 	}
 
 }

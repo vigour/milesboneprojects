@@ -5,6 +5,8 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 
+import com.milesbone.common.config.IConfiguration;
+
 import redis.clients.jedis.HostAndPort;
 
 /**
@@ -13,7 +15,7 @@ import redis.clients.jedis.HostAndPort;
  * @author miles
  * @date 2017-05-06 下午7:33:50
  */
-public interface IRedisConfig {
+public interface IRedisConfig extends IConfiguration{
 	
 	/**
 	 * IP地址和端口正则
