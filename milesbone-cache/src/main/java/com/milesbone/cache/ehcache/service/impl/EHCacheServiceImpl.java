@@ -1,5 +1,7 @@
 package com.milesbone.cache.ehcache.service.impl;
 
+import java.util.Set;
+
 import com.milesbone.cache.ehcache.service.IEHCache;
 
 import net.sf.ehcache.Cache;
@@ -13,66 +15,87 @@ import net.sf.ehcache.CacheManager;
  * @author miles
  * @date   2018-09-27 15:20
  */
-public class EHCacheServiceImpl implements IEHCache {
+public class EHCacheServiceImpl implements IEHCache{
 	
 	private CacheManager cacheManager;
 
-	public boolean save(String key, String value) {
-		// TODO Auto-generated method stub
-		return false;
-	}
 
-	public boolean save(String key, String value, long time) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	public boolean saveOrUpdate(String key, String value) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	public boolean saveOrUpdate(String key, String value, long time) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	public boolean update(String key, String value) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	public boolean update(String key, String value, long time) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	public String get(String key) {
+	public Cache getEHCache(String cacheName) {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+
+	public boolean putCache(String key, String value) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+
+	public boolean putCache(String key, String value, long time) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+
+	public boolean putOrReplace(String key, String value) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+
+	public boolean putOrReplace(String key, String value, long time) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+
+	public boolean replace(String key, String value) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+
+	public boolean replace(String key, String value, long time) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+
+	public String getCache(String key) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 
 	public boolean remove(String key) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
-	public boolean exist(String key) {
+
+	public boolean clearAll() {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
-	public Cache getCache(String cache) {
+
+	public boolean contains(String key) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+
+	public boolean isExpired(String key) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+
+	public Set<String> getAllKeys() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	public CacheManager getCacheManager() {
-		return cacheManager;
-	}
-
-	public void setCacheManager(CacheManager cacheManager) {
-		this.cacheManager = cacheManager;
-	}
 
 }

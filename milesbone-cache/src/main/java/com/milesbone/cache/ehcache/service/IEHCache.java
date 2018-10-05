@@ -14,12 +14,12 @@ import net.sf.ehcache.Cache;
  * @author miles
  * @date   2018-09-26 17:55
  */
-public interface IEHCache extends ICache {
+public interface IEHCache extends ICache<String> {
 
 	/**
 	 * 根据cache名称获取EhCache对象
 	 * @param cache
 	 * @return
 	 */
-	public Cache getCache(String  cache); 
+	public Cache getEHCache(String  cacheName); 
 }

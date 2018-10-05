@@ -12,7 +12,7 @@ import com.milesbone.common.cache.ICache;
  * @author miles
  * @date 2017-03-26 下午9:27:46
  */
-public interface IRedisCache extends ICache{
+public interface IRedisCache extends ICache<String>{
 	
 	
 	/**
