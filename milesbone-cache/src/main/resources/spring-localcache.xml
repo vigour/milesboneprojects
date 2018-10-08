@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.2.xsd">
+	
+	<!-- 本地缓存默认配置参数 -->
+	<bean id="localCacheConfig" class="com.milesbone.cache.local.config.DefaultLocalCacheConfig"/>
+	
+	<!-- Spring 本地缓存配置 -->
+	<bean id="springLocalCacheConfig" class="com.milesbone.cache.local.config.SpringLocalCacheConfig">
+		<constructor-arg name="localConfig">
+			<value>classpath:localcache.properties</value>
+		</constructor-arg>
+	</bean>
+	
+	<!-- 本地缓存的管理实现 -->
+	<bean id="localCache" class="com.milesbone.cache.local.service.impl.LocalCacheImpl">
+		<property name="cacheconfig" ref="springLocalCacheConfig"/>
+	</bean>
+	
+	<!-- 本地缓存的失效监控 -->
+	<bean id="localCacheMonitor" class="com.milesbone.cache.common.monitor.CacheExpireMonitor" >
+		<constructor-arg name="caches" ref="localCache"/>
+	</bean>
+</beans>

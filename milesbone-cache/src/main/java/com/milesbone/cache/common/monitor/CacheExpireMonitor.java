@@ -3,6 +3,7 @@ package com.milesbone.cache.common.monitor;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.DisposableBean;
 
 import com.milesbone.common.cache.ICache;
 
@@ -14,11 +15,13 @@ import com.milesbone.common.cache.ICache;
  * @author miles
  * @date   2018-10-05 09:12
  */
-public class CacheExpireMonitor implements Runnable{
+public class CacheExpireMonitor implements DisposableBean,Runnable{
 
 	private static final Logger logger = LoggerFactory.getLogger(CacheExpireMonitor.class);
 	
+	private volatile boolean flag;
 	
+	private Thread thread;
 	
 	private ICache<Object> caches;
 	
@@ -27,8 +30,17 @@ public class CacheExpireMonitor implements Runnable{
 	}
 	
 	public CacheExpireMonitor(ICache<Object> caches) {
+		this(caches,true);
+	}
+
+	
+	public CacheExpireMonitor(ICache<Object> caches, boolean flag) {
 		super();
 		this.caches = caches;
+		this.flag = flag;
+		this.thread = new Thread(this);
+		this.thread.setDaemon(true);
+		this.thread.start();
 	}
 
 	public ICache<Object> getCaches() {
@@ -42,7 +54,7 @@ public class CacheExpireMonitor implements Runnable{
 	public void run() {
 		logger.info("过期缓存监控线程启动...");
 		if(caches != null) {
-			while (true) {
+			while (flag) {
 				for(String key : caches.getAllKeys()) {
 					if(caches.isExpired(key)) {
 						caches.remove(key);
@@ -51,7 +63,11 @@ public class CacheExpireMonitor implements Runnable{
 				}
 			}
 		}
-		logger.info("过期缓存监控线程启动完成");
+		logger.info("过期缓存监控线程关闭");
+	}
+
+	public void destroy() throws Exception {
+		flag = false;
 	}
 
 

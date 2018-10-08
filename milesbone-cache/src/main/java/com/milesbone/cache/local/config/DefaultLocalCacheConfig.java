@@ -51,7 +51,7 @@ public class DefaultLocalCacheConfig implements ILocalCacheConfig {
 
 	private void init() {
 		logger.debug("初始化local cache配置文件");
-		// 加载ehcache配置文件
+		// 加载localcache配置文件
 		if (localCacheProp == null) {
 			localCacheProp = PropertyFileUtil.load(LOCAL_CACHE_CONFIG_PATH);
 		}
@@ -82,6 +82,6 @@ public class DefaultLocalCacheConfig implements ILocalCacheConfig {
 	}
 	
 	public Properties getProp() {
-		return null;
+		return localCacheProp;
 	}
 }

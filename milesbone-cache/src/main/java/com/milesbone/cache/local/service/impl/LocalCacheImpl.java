@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.milesbone.cache.common.entity.ICacheEntity;
+import com.milesbone.cache.local.ILocalCacheConfig;
 import com.milesbone.cache.local.config.DefaultLocalCacheConfig;
 import com.milesbone.cache.local.entity.LocalCacheEntity;
 import com.milesbone.cache.local.service.ILocalCache;
@@ -31,7 +32,14 @@ public class LocalCacheImpl implements ILocalCache{
 	
 	private static final Logger logger = LoggerFactory.getLogger(LocalCacheImpl.class);
 	
+	/**
+	 * 缓存参数配置
+	 */
+	private ILocalCacheConfig cacheconfig;
 	
+	/**
+	 * 缓存容器
+	 */
 	private static Map<String, ICacheEntity> cache = new ConcurrentHashMap<String, ICacheEntity>();
 
 	
@@ -62,13 +70,15 @@ public class LocalCacheImpl implements ILocalCache{
 	 */
 	private boolean putCacheValue(String key, Object value, long expireTime) {
 		try {
-			if(cache.size() > DefaultLocalCacheConfig.getInstance().getMaxCapacity()) {
+			if(cache.size() > cacheconfig.getMaxCapacity()) {
+				logger.error("缓存容量已满,当前最大值:{}",cacheconfig.getMaxCapacity());
 				return false;
 			}
-			expireTime = expireTime > 0 ? expireTime : 0L;
+			expireTime = expireTime >= 0 ? expireTime : -1L;
 			// 序列化赋值
 			ICacheEntity entityClone = clone(new LocalCacheEntity(value, System.nanoTime(), expireTime));
 			cache.put(key, entityClone);
+			return true;
 		} catch (Exception e) {
 			logger.error("{}方法异常.{}","putCacheValue()", e.getMessage());
 			e.printStackTrace();
@@ -108,7 +118,7 @@ public class LocalCacheImpl implements ILocalCache{
 			if(StringUtils.isBlank(key)) {
 				throw new IllegalArgumentException("LocalCache key is null");
 			}else {
-				return putCache(key, value, DefaultLocalCacheConfig.getInstance().getDefaultExpireTime());
+				return putCache(key, value, cacheconfig.getDefaultExpireTime());
 			}
 		} catch (NumberFormatException e) {
 			logger.error("{}数字类型格式化异常.{}",DefaultLocalCacheConfig.DEFAULT_EXPIRE, e.getMessage());
@@ -200,7 +210,7 @@ public class LocalCacheImpl implements ILocalCache{
 		LocalCacheEntity entity = (LocalCacheEntity) cache.get(key);
 		long timoutTime = TimeUnit.NANOSECONDS.toSeconds(System.nanoTime() - entity.getGenerateTimestamp());
 
-		if(timoutTime >= entity.getExpireTime()) {
+		if(entity.getExpireTime() != 0 && timoutTime > entity.getExpireTime()) {
 			return true;
 		}
 		
@@ -210,5 +220,17 @@ public class LocalCacheImpl implements ILocalCache{
 	public Set<String> getAllKeys() {
 		return cache.keySet();
 	}
+
+
+	public ILocalCacheConfig getCacheconfig() {
+		return cacheconfig;
+	}
+
+
+	public void setCacheconfig(ILocalCacheConfig cacheconfig) {
+		this.cacheconfig = cacheconfig;
+	}
+	
+	
 
 }

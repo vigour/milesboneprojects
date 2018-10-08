@@ -4,36 +4,54 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import javax.annotation.Resource;
+
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.milesbone.cache.common.monitor.CacheExpireMonitor;
 import com.milesbone.cache.local.entity.LocalCacheEntity;
+import com.milesbone.cache.local.service.ILocalCache;
 import com.milesbone.cache.local.service.impl.LocalCacheImpl;
+import com.milesbone.common.test.base.AbstactBeanTestCase;
 
-public class LocalCacheServiceTest {
+public class LocalCacheServiceTest extends AbstactBeanTestCase{
 	
 	private static final Logger logger = LoggerFactory.getLogger(LocalCacheServiceTest.class);
 
+	@Resource(name="localCache")
+	private ILocalCache cacheImpl;
+	
 	@Test
 	public void testCacheServiceImpl() {
-		LocalCacheImpl cacheImpl = new LocalCacheImpl();
-		cacheImpl.putCache("test", "test", 10 * 1000L);
-		cacheImpl.putCache("myTest", "myTest", 15 * 1000L);
-		CacheExpireMonitor cacheListener = new CacheExpireMonitor(cacheImpl);
-		cacheListener.run();
-		LocalCacheEntity localcache = (LocalCacheEntity) cacheImpl.getCache("test");
+		cacheImpl.putCache("test", "test", 7L);
+		cacheImpl.putCache("myTest", "myTest", 15L);
+		cacheImpl.putCache("NonExpireTest", "NonExpireTest", 0L);
+		
+		LocalCacheEntity localcache = (LocalCacheEntity) cacheImpl.getCacheEntity("test");
 		logger.info("test:{}" , localcache.getValue());
-		localcache = (LocalCacheEntity) cacheImpl.getCache("myTest");
+		localcache = (LocalCacheEntity) cacheImpl.getCacheEntity("myTest");
 		logger.info("myTest:{}",  localcache.getValue());
+		localcache = (LocalCacheEntity) cacheImpl.getCacheEntity("NonExpireTest");
+		logger.info("NonExpireTest:{}",  localcache.getValue());
+		
 		try {
-			TimeUnit.SECONDS.sleep(20);        
+			TimeUnit.SECONDS.sleep(10); 
+			logger.info("test:" + cacheImpl.getCache("test"));
+			logger.info("myTest:" + cacheImpl.getCache("myTest"));
+			logger.info("NonExpireTest:" + cacheImpl.getCache("NonExpireTest"));
 		} catch (InterruptedException e) {
 			e.printStackTrace();        
 		}
-		logger.info("test:" + cacheImpl.getCache("test"));
-		logger.info("myTest:" + cacheImpl.getCache("myTest"));
+		try {
+			TimeUnit.SECONDS.sleep(10); 
+			logger.info("test:" + cacheImpl.getCache("test"));
+			logger.info("myTest:" + cacheImpl.getCache("myTest"));
+			logger.info("NonExpireTest:" + cacheImpl.getCache("NonExpireTest"));
+		} catch (InterruptedException e) {
+			e.printStackTrace();        
+		}
 	}
 	
 	
@@ -43,7 +61,6 @@ public class LocalCacheServiceTest {
 	@Test    
 	public void testThredSafe() {
 		final String key = "thread";
-		final LocalCacheImpl cacheImpl = new LocalCacheImpl();
 		ExecutorService exec = Executors.newCachedThreadPool();
 		for (int i = 0; i < 100; i++) { 
 			exec.execute(new Runnable() {
@@ -68,4 +85,16 @@ public class LocalCacheServiceTest {
 		}
 		logger.info(cacheImpl.getCache(key).toString());
 	}
+
+
+	public void setup() {
+		logger.debug("setup begin.....");
+	}
+
+
+	public void tearDown() {
+		logger.debug("done!!!!!");		
+	}
+	
+	
 }
