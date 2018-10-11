@@ -13,4 +13,18 @@ import com.milesbone.common.config.IConfiguration;
  */
 public interface IEHcacheConfig extends IConfiguration {
 
+
+	/**
+	 * 获取默认缓存名称
+	 * @return
+	 */
+	public String getDefaultCacheName();
+
+	
+	/**
+	 * 获取默认的失效时间 单位秒 默认 1天
+	 * @return
+	 */
+	public int getDefaultExpireTime();
+
 }

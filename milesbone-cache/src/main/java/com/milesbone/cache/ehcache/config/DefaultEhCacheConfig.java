@@ -21,7 +21,18 @@ public class DefaultEhCacheConfig implements IEHcacheConfig{
 	
 	private static final Logger logger = LoggerFactory.getLogger(DefaultEhCacheConfig.class);
 	
-	private static final String EHCACHE_CONFIG_PATH = "ehcache.properties";
+	private static final String EHCACHE_CONFIG_PATH = "/ehcache.properties";
+	
+	/**
+	 * 默认缓存名称
+	 */
+	public static final String EHCACHE_DEFAULT_CACHE_NAME = "echache.default.cacheName";
+	
+	/**
+	 * 默认失效时间
+	 */
+	public static final String EHCACHE_DEFAULT_EXPIRE_TIME = "ehcache.default.expreTime";
+	
 	
 	private Properties ehcacheProperties;
 	
@@ -59,6 +70,23 @@ public class DefaultEhCacheConfig implements IEHcacheConfig{
 		this.ehcacheProperties = ehcacheProperties;
 	}
 
+
+	
+	/* (non-Javadoc)
+	 * @see com.milesbone.cache.ehcache.IEHcacheConfig#getDefaultCacheName()
+	 */
+	public String getDefaultCacheName() {
+		return ehcacheProperties.getProperty(EHCACHE_DEFAULT_CACHE_NAME, "defaultCache");
+	}
+
+	/* (non-Javadoc)
+	 * @see com.milesbone.cache.ehcache.IEHcacheConfig#getDefaultExpireTime()
+	 */
+	public int getDefaultExpireTime() {
+		return Integer.parseInt(ehcacheProperties.getProperty(EHCACHE_DEFAULT_EXPIRE_TIME, "86400"));
+	}
+	
+	
 
 	public Properties getProp() {
 		return ehcacheProperties;
