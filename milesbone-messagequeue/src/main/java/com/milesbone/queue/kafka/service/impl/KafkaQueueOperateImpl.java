@@ -87,7 +87,7 @@ public class KafkaQueueOperateImpl<T extends KafkaQueueEntity> implements IQueue
 					event.setRecordMetadata(metadata);
 					try {
 						logger.debug("异步回调处理监听器");
-						listener.actionPerformed(event);
+						listener.notifyObservers(event);
 					} catch (Exception e) {
 						logger.error("异步回调异常:{}", e.getMessage());
 						e.printStackTrace();

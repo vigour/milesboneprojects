@@ -86,7 +86,7 @@ public class ZkClientLeaderElection implements ILeaderElection, Watcher {
 	private void callBack() {
 		try {
 			isLeader = true;
-			listener.actionPerformed(null);
+			listener.notifyObservers(null);
 		} catch (Exception e) {
 			logger.error("zookeeper选举回调异常:{}", e);
 			e.printStackTrace();

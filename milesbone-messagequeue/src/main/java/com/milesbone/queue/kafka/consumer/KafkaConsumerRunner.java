@@ -118,7 +118,7 @@ public class KafkaConsumerRunner implements Runnable {
 								if (listener != null) {
 									ConsumerEvent event = new ConsumerEvent();
 									event.setRecord(record);
-									listener.actionPerformed(event);
+									listener.notifyObservers(event);
 								}
 								if (!autocommit) {
 									commitConsumer(Collections.singletonMap(partition, new OffsetAndMetadata(record.offset() + 1)));
@@ -143,7 +143,7 @@ public class KafkaConsumerRunner implements Runnable {
 						if (listener != null) {
 							ConsumerEvent event = new ConsumerEvent();
 							event.setRecords(buffer);
-							listener.actionPerformed(event);
+							listener.notifyObservers(event);
 						}
 						if(buffer.size() >= minBatchSize){
 							buffer.clear();
