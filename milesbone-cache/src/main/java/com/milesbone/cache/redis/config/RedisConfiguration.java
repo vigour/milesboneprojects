@@ -24,13 +24,14 @@ public class RedisConfiguration implements IConfiguration{
 	/**
 	 * 定义连接字符串的key
 	 */
-	public static final String REDIS_SERVERS_CONFIG = "redis.servers"; 
+//	public static final String REDIS_SERVERS_CONFIG = "redis.servers"; 
+	public static final String REDIS_SERVERS_CONFIG = "spring.redis.cluster.nodes"; 
 	
 	
 	/**
 	 * 定义集群最多重定向次数(默认5)，
 	 */
-	public static final String REDIS_DEFAULT_MAX_REDIRECTIONS = "redis.default.max.attempts";
+	public static final String REDIS_DEFAULT_MAX_REDIRECTIONS = "spring.redis.cluster.max-redirects";
 	
 
 	/**

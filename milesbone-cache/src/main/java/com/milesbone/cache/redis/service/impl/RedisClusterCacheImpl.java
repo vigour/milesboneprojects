@@ -84,10 +84,10 @@ public class RedisClusterCacheImpl implements IRedisCache {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.milesbone.common.cache.ICache#save(java.lang.String,
+	 * @see com.milesbone.common.cache.ICache#putCache(java.lang.String,
 	 * java.lang.String)
 	 */
-	public boolean save(String key, String value) {
+	public boolean putCache(String key, String value) {
 		if (!this.jedisCluster.exists(key)) {
 			return this.jedisCluster.setex(key, dataExpireTime, value).equals("OK") ? true : false;
 		}
@@ -97,13 +97,13 @@ public class RedisClusterCacheImpl implements IRedisCache {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.milesbone.common.cache.ICache#save(java.lang.String,
+	 * @see com.milesbone.common.cache.ICache#putCache(java.lang.String,
 	 * java.lang.String, long)
 	 */
 
-	public boolean save(String key, String value, long time) {
+	public boolean putCache(String key, String value, long expireTime) {
 		if (!this.jedisCluster.exists(key)) {
-			return this.jedisCluster.setex(key, new Long(time).intValue(), value).equals("OK") ? true : false;
+			return this.jedisCluster.setex(key, new Long(expireTime).intValue(), value).equals("OK") ? true : false;
 		}
 		return false;
 	}
@@ -111,33 +111,33 @@ public class RedisClusterCacheImpl implements IRedisCache {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.milesbone.common.cache.ICache#saveOrUpdate(java.lang.String,
+	 * @see com.milesbone.common.cache.ICache#putOrReplace(java.lang.String,
 	 * java.lang.String)
 	 */
 
-	public boolean saveOrUpdate(String key, String value) {
+	public boolean putOrReplace(String key, String value) {
 		return this.jedisCluster.setex(key, dataExpireTime, value).equals("OK") ? true : false;
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.milesbone.common.cache.ICache#saveOrUpdate(java.lang.String,
+	 * @see com.milesbone.common.cache.ICache#putOrReplace(java.lang.String,
 	 * java.lang.String, long)
 	 */
 
-	public boolean saveOrUpdate(String key, String value, long time) {
-		return this.jedisCluster.setex(key, new Long(time).intValue(), value).equals("OK") ? true : false;
+	public boolean putOrReplace(String key, String value, long expireTime) {
+		return this.jedisCluster.setex(key, new Long(expireTime).intValue(), value).equals("OK") ? true : false;
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.milesbone.common.cache.ICache#update(java.lang.String,
+	 * @see com.milesbone.common.cache.ICache#replace(java.lang.String,
 	 * java.lang.String)
 	 */
 
-	public boolean update(String key, String value) {
+	public boolean replace(String key, String value) {
 		if (!this.jedisCluster.exists(key)) {
 			return this.jedisCluster.set(key, value).equals("OK") ? true : false;
 		}
@@ -147,13 +147,13 @@ public class RedisClusterCacheImpl implements IRedisCache {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.milesbone.common.cache.ICache#update(java.lang.String,
+	 * @see com.milesbone.common.cache.ICache#replace(java.lang.String,
 	 * java.lang.String, long)
 	 */
 
-	public boolean update(String key, String value, long time) {
+	public boolean replace(String key, String value, long expireTime) {
 		if (!this.jedisCluster.exists(key)) {
-			return this.jedisCluster.setex(key, new Long(time).intValue(), value).equals("OK") ? true : false;
+			return this.jedisCluster.setex(key, new Long(expireTime).intValue(), value).equals("OK") ? true : false;
 		}
 		return false;
 	}
@@ -161,10 +161,10 @@ public class RedisClusterCacheImpl implements IRedisCache {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.milesbone.common.cache.ICache#get(java.lang.String)
+	 * @see com.milesbone.common.cache.ICache#getCache(java.lang.String)
 	 */
 
-	public String get(String key) {
+	public String getCache(String key) {
 		return this.jedisCluster.get(key);
 	}
 
@@ -181,10 +181,10 @@ public class RedisClusterCacheImpl implements IRedisCache {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.milesbone.common.cache.ICache#exist(java.lang.String)
+	 * @see com.milesbone.common.cache.ICache#contains(java.lang.String)
 	 */
 
-	public boolean exist(String key) {
+	public boolean contains(String key) {
 		return this.jedisCluster.exists(key);
 	}
 
@@ -410,6 +410,21 @@ public class RedisClusterCacheImpl implements IRedisCache {
 
 	public JedisCluster getJedisCluster() {
 		return jedisCluster;
+	}
+
+	public boolean clearAll() {
+		return false;
+	}
+
+	public boolean isExpired(String key) {
+		if(contains(key)) {
+			return this.jedisCluster.ttl(key) > 0; 
+		}
+		return false;
+	}
+
+	public Set<String> getAllKeys() {
+		return null;
 	}
 
 }

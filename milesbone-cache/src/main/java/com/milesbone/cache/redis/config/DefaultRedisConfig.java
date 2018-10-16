@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import com.milesbone.cache.redis.IRedisConfig;
 
 import redis.clients.jedis.HostAndPort;
+import redis.clients.jedis.JedisPoolConfig;
 
 /**
  * 默认redis配置类,redisServers
@@ -19,7 +20,7 @@ import redis.clients.jedis.HostAndPort;
  * @author miles
  * @date 2017-05-06 下午7:37:29
  */
-public class DefaultRedisConfig implements IRedisConfig {
+public class DefaultRedisConfig  implements IRedisConfig {
 
 	private static final Logger logger = LoggerFactory.getLogger(DefaultRedisConfig.class);
 
@@ -34,6 +35,8 @@ public class DefaultRedisConfig implements IRedisConfig {
 	private Integer connectionTimeout;
 
 	private GenericObjectPoolConfig poolconfig;
+	
+//	private JedisPoolConfig jedisPoolConfig;
 
 	/**
 	 * 
@@ -188,7 +191,7 @@ public class DefaultRedisConfig implements IRedisConfig {
 			this.connectionTimeout = connectionTimeout;
 			
 			if (poolconfig == null) {
-				poolconfig = new GenericObjectPoolConfig();
+				poolconfig = new JedisPoolConfig();
 				poolconfig.setMinIdle(
 						Integer.parseInt(redisProp.getProperty(RedisConfiguration.REDIS_POOL_MIN_IDEL_CONFIG, "50")));
 				poolconfig.setMaxIdle(
@@ -207,6 +210,9 @@ public class DefaultRedisConfig implements IRedisConfig {
 		}
 		logger.debug("DefaultRedisConfig构造方法初始化完成");
 	}
+	
+	
+
 
 	/*
 	 * (non-Javadoc)
@@ -251,7 +257,6 @@ public class DefaultRedisConfig implements IRedisConfig {
 	 * 
 	 * @see com.milesbone.cache.redis.config.IRedisConfig#getNodes()
 	 */
-	@Override
 	public Set<HostAndPort> getNodes() {
 		return nodes;
 	}
@@ -262,7 +267,6 @@ public class DefaultRedisConfig implements IRedisConfig {
 	 * @see
 	 * com.milesbone.cache.redis.config.IRedisConfig#setNodes(java.util.Set)
 	 */
-	@Override
 	public void setNodes(Set<HostAndPort> nodes) {
 		this.nodes = nodes;
 	}
@@ -282,7 +286,6 @@ public class DefaultRedisConfig implements IRedisConfig {
 	 * 
 	 * @see com.milesbone.cache.redis.config.IRedisConfig#setMaxAttempts(int)
 	 */
-	@Override
 	public void setMaxAttempts(Integer maxAttempts) {
 		this.maxAttempts = maxAttempts;
 	}
@@ -292,7 +295,6 @@ public class DefaultRedisConfig implements IRedisConfig {
 	 * 
 	 * @see com.milesbone.cache.redis.config.IRedisConfig#getConnectionTimeout()
 	 */
-	@Override
 	public Integer getConnectionTimeout() {
 		return connectionTimeout;
 	}
@@ -312,7 +314,6 @@ public class DefaultRedisConfig implements IRedisConfig {
 	 * 
 	 * @see com.milesbone.cache.redis.config.IRedisConfig#getPoolconfig()
 	 */
-	@Override
 	public GenericObjectPoolConfig getPoolconfig() {
 		return poolconfig;
 	}
@@ -324,10 +325,11 @@ public class DefaultRedisConfig implements IRedisConfig {
 	 * com.milesbone.cache.redis.config.IRedisConfig#setPoolconfig(org.apache.
 	 * commons.pool2.impl.GenericObjectPoolConfig)
 	 */
-	@Override
 	public void setPoolconfig(GenericObjectPoolConfig poolconfig) {
 		this.poolconfig = poolconfig;
 	}
+
+	
 
 	/**
 	 * 解析redis服务器连接串
@@ -367,4 +369,6 @@ public class DefaultRedisConfig implements IRedisConfig {
 	public Properties getProp() {
 		return null;
 	}
+
+
 }

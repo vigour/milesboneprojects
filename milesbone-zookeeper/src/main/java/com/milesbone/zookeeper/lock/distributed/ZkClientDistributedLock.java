@@ -210,7 +210,7 @@ public class ZkClientDistributedLock implements IDistributedLock {
 	private void callback() {
 		try {
 			if (listener == null) {
-				listener.actionPerformed(null);
+				listener.notifyObservers(null);
 			}
 		} catch (Exception e) {
 			logger.error("zookeeper分布式锁回调异常:{}", e.getMessage());

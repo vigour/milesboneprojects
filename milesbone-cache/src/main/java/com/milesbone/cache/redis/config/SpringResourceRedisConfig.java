@@ -14,6 +14,7 @@ import org.springframework.core.io.Resource;
 import com.milesbone.cache.redis.IRedisConfig;
 
 import redis.clients.jedis.HostAndPort;
+import redis.clients.jedis.JedisPoolConfig;
 
 /**
  * Spring 资源加载配置
@@ -44,6 +45,7 @@ public class SpringResourceRedisConfig implements IRedisConfig {
 	private Integer connectionTimeout;
 
 	private GenericObjectPoolConfig poolconfig;
+	
 
 	/**
 	 * 
@@ -171,7 +173,7 @@ public class SpringResourceRedisConfig implements IRedisConfig {
 			this.connectionTimeout = connectionTimeout;
 			
 			if (poolconfig == null) {
-				poolconfig = new GenericObjectPoolConfig();
+				poolconfig = new JedisPoolConfig();
 				poolconfig.setMinIdle(
 						Integer.parseInt(redisProp.getProperty(RedisConfiguration.REDIS_POOL_MIN_IDEL_CONFIG, "50")));
 				poolconfig.setMaxIdle(
@@ -182,11 +184,22 @@ public class SpringResourceRedisConfig implements IRedisConfig {
 						.parseLong(redisProp.getProperty(RedisConfiguration.REDIS_POOL_MAX_TIMEOUT_CONFIG, "180000")));
 			}
 			this.poolconfig = poolconfig;
+			
 		} catch (IOException e) {
 			logger.error("初始化redis配置异常: " + e.getMessage());
 			e.printStackTrace();
 		}
 		logger.debug("SpringResourceRedisConfig构造方法初始化完成");
+	}
+	
+	
+	
+	
+
+	public SpringResourceRedisConfig(Resource addressConfig, String addressKeyPrefix, Integer dataExpireTime,
+			Integer maxAttempts, Integer connectionTimeout, GenericObjectPoolConfig poolconfig, Set<HostAndPort> nodes,
+			JedisPoolConfig jedisPoolConfig) {
+		
 	}
 
 

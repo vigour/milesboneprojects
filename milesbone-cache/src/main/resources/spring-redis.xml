@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
 
 	<bean id="distributedLock" class="com.milesbone.cache.redis.distribute.RedisBasedDistributedLock">
 		<constructor-arg name="jedisCluster" ref="jedisCluster"/>
@@ -19,14 +24,52 @@
 		</constructor-arg>
 		<constructor-arg name="addressKeyPrefix" value="cluster.redis"/>
 	</bean>
+	
+	<!-- Spring data redis 配置 -->
+	<bean id="springDataConfig" class="org.springframework.data.redis.connection.RedisClusterConfiguration">
+		<constructor-arg name="propertySource" value="classpath:redis.properties"/>
+	</bean>
+	
+	<!-- redis Poolproperties  -->
+<!-- 	<util:properties id="jedispPoolproperties" location="classpath:redis.properties" ignore-resource-not-found="true"/> -->
+	
+	<!-- jedis pool config -->
+<!-- 	<bean id="jedispoolconfig" class="redis.clients.jedis.JedisPoolConfig"> -->
+<!-- 		<property name="maxIdle" value="#{redis.pool.max.idle}" /> -->
+<!-- 		<property name="maxTotal" value="#{redis.pool.max.total}" /> -->
+<!-- 		<property name="maxWaitMillis" value="#{redis.pool.max.timeout}" /> -->
+<!-- 		<property name="testOnBorrow" value="#{redis.pool.testOnBorrow}" /> -->
+<!-- 	</bean> -->
+	
+	
+	
+	<!-- spring data Spring-redis连接池管理工厂配置 -->
+	<bean id="jedisConnectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory" >
+		<constructor-arg name="clusterConfig" ref="springDataConfig"/>
+		<constructor-arg name="poolConfig" value="#{springResourceRedis.poolConfig}"/>
+<!-- 		<property name="hostName" value="#{spring.redis.cluster.nodes}"/> -->
+<!-- 		<property name="password" value="#{redis.pass}"/> -->
+<!-- 		<property name="port" value="#{redis.port}"/> -->
+<!-- 		<property name="poolConfig" ref="jedispoolconfig"/> -->
+	</bean>
+	
+	<!-- redis template -->
+	<bean id="redisTemplate" class="org.springframework.data.redis.core.StringRedisTemplate">
+		<property name="connectionFactory" ref="jedisConnectionFactory"></property>
+	</bean>
+	
 
+	<!-- 自定义redis cluster 工厂 -->
 	<bean id="jedisCluster"  class="com.milesbone.cache.redis.factory.JedisClusterFactory">
 		<property name="redisConfig" ref="springResourceRedis" />
 	</bean>
 
+	<!-- redis cache实现 -->
 	<bean id="redisCache"
 		class="com.milesbone.cache.redis.service.impl.RedisClusterCacheImpl">
 		<property name="jedisCluster" ref="jedisCluster" />
 	</bean>
+	
+	
 
 </beans>

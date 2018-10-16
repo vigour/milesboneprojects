@@ -11,6 +11,15 @@ import com.dyuproject.protostuff.ProtostuffIOUtil;
 import com.dyuproject.protostuff.Schema;
 import com.dyuproject.protostuff.runtime.RuntimeSchema;
 
+
+/**
+ * 序列化工具类
+ * @Title  SerializationUtil.java
+ * @Package com.milesbone.util
+ * @Description    TODO
+ * @author miles
+ * @date   2018-10-08 13:43
+ */
 public class SerializationUtil {
 
     private static Map<Class<?>, Schema<?>> cachedSchema = new ConcurrentHashMap<Class<?>, Schema<?>>();

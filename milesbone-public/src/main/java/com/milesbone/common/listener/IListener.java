@@ -9,5 +9,10 @@ import com.milesbone.common.event.IEvent;
  */
 public interface IListener {
 
-	public void actionPerformed(IEvent event) throws Exception;
+	/**
+	 * 通知观察者
+	 * @param event
+	 * @throws Exception
+	 */
+	public void notifyObservers(IEvent event) throws Exception;
 }
