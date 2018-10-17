@@ -70,6 +70,12 @@
 		<!-- objenesis -->
 		<objenesis.version>2.6</objenesis.version>
 		
+		<!-- fst serializtion https://mvnrepository.com/artifact/de.ruedigermoeller/fst -->
+		<fst.version>2.57</fst.version>
+		
+		<!-- kryo serilization https://mvnrepository.com/artifact/com.esotericsoftware/kryo -->
+		<kryo.version>4.0.2</kryo.version>
+		
 		<!-- ehcache -->
 		<ehcache.version>2.10.4</ehcache.version>
 		
@@ -368,6 +374,19 @@
 			    <artifactId>objenesis</artifactId>
 			    <version>${objenesis.version}</version>
 			</dependency>
+			
+			<dependency>
+			    <groupId>de.ruedigermoeller</groupId>
+			    <artifactId>fst</artifactId>
+			    <version>${fst.version}</version>
+			</dependency>
+			
+			<!-- https://mvnrepository.com/artifact/com.esotericsoftware/kryo -->
+			<dependency>
+			    <groupId>com.esotericsoftware</groupId>
+			    <artifactId>kryo</artifactId>
+			    <version>${kryo.version}</version>
+			</dependency>			
 			
 			<dependency>
 		      <groupId>net.sf.ehcache</groupId>

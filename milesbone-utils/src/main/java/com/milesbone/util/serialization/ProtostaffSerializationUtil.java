@@ -1,4 +1,4 @@
-package com.milesbone.util;
+package com.milesbone.util.serialization;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -10,23 +10,24 @@ import com.dyuproject.protostuff.LinkedBuffer;
 import com.dyuproject.protostuff.ProtostuffIOUtil;
 import com.dyuproject.protostuff.Schema;
 import com.dyuproject.protostuff.runtime.RuntimeSchema;
+import com.milesbone.common.util.ISerializationUtil;
 
 
 /**
- * 序列化工具类
- * @Title  SerializationUtil.java
+ * Protostaff 序列化工具类
+ * @Title  ProtostaffSerializationUtil.java
  * @Package com.milesbone.util
  * @Description    TODO
  * @author miles
  * @date   2018-10-08 13:43
  */
-public class SerializationUtil {
+public class ProtostaffSerializationUtil implements ISerializationUtil{
 
     private static Map<Class<?>, Schema<?>> cachedSchema = new ConcurrentHashMap<Class<?>, Schema<?>>();
 
     private static Objenesis objenesis = new ObjenesisStd(true);
 
-    private SerializationUtil() {
+    private ProtostaffSerializationUtil() {
     }
 
     @SuppressWarnings("unchecked")
@@ -41,6 +42,12 @@ public class SerializationUtil {
         return schema;
     }
 
+    
+    /**
+     * Protostuff Serialize
+     * @param obj
+     * @return
+     */
     @SuppressWarnings("unchecked")
     public static <T> byte[] serialize(T obj) {
         Class<T> cls = (Class<T>) obj.getClass();
@@ -65,4 +72,6 @@ public class SerializationUtil {
             throw new IllegalStateException(e.getMessage(), e);
         }
     }
+    
+    
 }

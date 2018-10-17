@@ -44,5 +44,15 @@
 		    <artifactId>objenesis</artifactId>
 		</dependency>
 
+		<dependency>
+		    <groupId>de.ruedigermoeller</groupId>
+		    <artifactId>fst</artifactId>
+		</dependency>
+		
+		<dependency>
+		    <groupId>com.esotericsoftware</groupId>
+		    <artifactId>kryo</artifactId>
+		</dependency>
+		
 	</dependencies>
 </project>

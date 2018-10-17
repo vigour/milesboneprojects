@@ -1,5 +1,8 @@
 package com.milesbone.cache.redis;
 
+import java.util.Iterator;
+import java.util.Set;
+
 import javax.annotation.Resource;
 
 import org.junit.Test;
@@ -71,6 +74,15 @@ public class RedisClusterBeanTest extends AbstactServerBeanTestCase {
 			logger.info("获取redis服务key:{},value:{},ttl:{}",key, cache.getCache(key),cache.ttl(key));
 		}else{
 			logger.info("未找到相应redis的key");
+		}
+	}
+	
+	@Test
+	public void testKeys(){
+		Set<String> sets = cache.getAllKeys();
+		Iterator<String> it = sets.iterator();
+		while(it.hasNext()) {
+			logger.info("key 值:" + it.next());
 		}
 	}
 
