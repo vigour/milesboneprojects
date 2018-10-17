@@ -90,7 +90,13 @@ public interface ICache<T extends Object> {
     public boolean isExpired(String key);
     
     /**
-     * 获取所有key
+     *KEYS pattern
+	 *查找所有符合给定模式 pattern 的 key 。
+	 *KEYS * 匹配数据库中所有 key 。
+	 *KEYS h?llo 匹配 hello ， hallo 和 hxllo 等。
+	 *KEYS h*llo 匹配 hllo 和 heeeeello 等。
+	 *KEYS h[ae]llo 匹配 hello 和 hallo ，但不匹配 hillo 。
+	 *特殊符号用 \ 隔开
      * @return
      */
     public Set<String> getAllKeys();

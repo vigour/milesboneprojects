@@ -6,7 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 
-import com.milesbone.util.SerializationUtil;
+import com.milesbone.util.serialization.ProtostaffSerializationUtil;
 
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
@@ -72,7 +72,7 @@ public class EHCacheMethodInterceptor implements MethodInterceptor, Initializing
 			
 			result = invocation.proceed();
 			
-			element = new Element(cacheKey, SerializationUtil.serialize(result));
+			element = new Element(cacheKey, ProtostaffSerializationUtil.serialize(result));
 			logger.debug("-----进入非缓存中查找，例如直接查找数据库，查找后放入缓存");
 			
 			//将key和value存入cache

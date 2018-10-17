@@ -25,9 +25,15 @@
 		<constructor-arg name="addressKeyPrefix" value="cluster.redis"/>
 	</bean>
 	
+	<bean id="redisProperties" class="org.springframework.core.io.support.ResourcePropertySource" >
+		<constructor-arg name="location">
+			<value>classpath:redis.properties</value>
+		</constructor-arg>
+	</bean>
+	
 	<!-- Spring data redis 配置 -->
 	<bean id="springDataConfig" class="org.springframework.data.redis.connection.RedisClusterConfiguration">
-		<constructor-arg name="propertySource" value="classpath:redis.properties"/>
+		<constructor-arg name="propertySource" ref="redisProperties"/>
 	</bean>
 	
 	<!-- redis Poolproperties  -->
@@ -46,7 +52,7 @@
 	<!-- spring data Spring-redis连接池管理工厂配置 -->
 	<bean id="jedisConnectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory" >
 		<constructor-arg name="clusterConfig" ref="springDataConfig"/>
-		<constructor-arg name="poolConfig" value="#{springResourceRedis.poolConfig}"/>
+		<constructor-arg name="poolConfig" value="#{springResourceRedis.getPoolconfig()}"/>
 <!-- 		<property name="hostName" value="#{spring.redis.cluster.nodes}"/> -->
 <!-- 		<property name="password" value="#{redis.pass}"/> -->
 <!-- 		<property name="port" value="#{redis.port}"/> -->

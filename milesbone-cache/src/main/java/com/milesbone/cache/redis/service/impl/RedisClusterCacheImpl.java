@@ -3,6 +3,7 @@ package com.milesbone.cache.redis.service.impl;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.slf4j.Logger;
@@ -12,7 +13,9 @@ import com.milesbone.cache.redis.IRedisConfig;
 import com.milesbone.cache.redis.config.DefaultRedisConfig;
 import com.milesbone.cache.redis.service.IRedisCache;
 
+import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisCluster;
+import redis.clients.jedis.JedisPool;
 
 /**
  * redis集群实现
@@ -33,6 +36,11 @@ public class RedisClusterCacheImpl implements IRedisCache {
 	 * 设置默认数据有效期 ，默认30天（2592000秒）
 	 */
 	private Integer dataExpireTime;
+	
+	/**
+	 * 默认过滤规则
+	 */
+	private static final String DEFAULT_PATTERN = "*";
 
 	/**
 	 *  
@@ -424,7 +432,29 @@ public class RedisClusterCacheImpl implements IRedisCache {
 	}
 
 	public Set<String> getAllKeys() {
-		return null;
+		return getAllKeys(DEFAULT_PATTERN);
+	}
+	
+	
+	public Set<String> getAllKeys(String pattern) {
+		logger.debug("Start getting keys...");
+		TreeSet<String> keys = new TreeSet<>();
+		Map<String, JedisPool> clusterNodes = this.jedisCluster.getClusterNodes();
+		for(String k : clusterNodes.keySet()){
+			logger.debug("Getting keys from: {}", k);
+			JedisPool jp = clusterNodes.get(k);
+			Jedis connection = jp.getResource();
+			try {
+				keys.addAll(connection.keys(pattern));
+			} catch(Exception e){
+				logger.error("Getting keys error: {}", e);
+			} finally{
+				logger.debug("Connection closed.");
+				connection.close();//用完一定要close这个链接！！！
+			}
+		}
+		logger.debug("Keys gotten!");
+		return keys;
 	}
 
 }
