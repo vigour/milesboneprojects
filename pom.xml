@@ -48,6 +48,10 @@
 		<aspectj.version>1.8.8</aspectj.version>
 		<cglib.version>3.2.4</cglib.version>
 
+		<!-- taglibs standard -->
+		<taglibs.standard.version>1.1.2</taglibs.standard.version>
+		<!-- JSTL -->
+		<jsp-api.version>2.2.1-b03</jsp-api.version>
 		<!-- JSTL -->
 		<jstl.version>1.2</jstl.version>
 
@@ -162,7 +166,25 @@
 				<version>${servlet.version}</version>
 				<scope>provided</scope>
 			</dependency>
-
+			
+			<dependency>
+				<groupId>taglibs</groupId>
+				<artifactId>standard</artifactId>
+				<version>${taglibs.standard.version}</version>
+			</dependency>
+			
+			<dependency>
+			    <groupId>javax.servlet.jsp</groupId>
+			    <artifactId>jsp-api</artifactId>
+			    <version>${jsp-api.version}</version>
+			</dependency>
+			
+			<dependency>
+				<groupId>jstl</groupId>
+				<artifactId>jstl</artifactId>
+				<version>${jstl.version}</version>
+			</dependency>
+			
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-test</artifactId>
@@ -295,12 +317,6 @@
 				<groupId>cglib</groupId>
 				<artifactId>cglib</artifactId>
 				<version>${cglib.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>jstl</groupId>
-				<artifactId>jstl</artifactId>
-				<version>${jstl.version}</version>
 			</dependency>
 
 			<dependency>
