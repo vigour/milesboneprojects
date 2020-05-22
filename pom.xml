@@ -25,7 +25,7 @@
 		<maven.dependency.plugin.version>3.0.0</maven.dependency.plugin.version>
 		
 		<!-- spring版本号 -->
-		<spring.version>4.2.5.RELEASE</spring.version>
+		<spring.version>5.2.6.RELEASE</spring.version>
 
 		<!-- Spring Security -->
 		<spring.security.version>4.1.0.RELEASE</spring.security.version>
