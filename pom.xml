@@ -59,7 +59,7 @@
 		<jackson.version>1.9.13</jackson.version>
 
 		<!-- 格式化对象，方便输出日志 -->
-		<fastjson.version>1.2.12</fastjson.version>
+		<fastjson.version>1.2.25</fastjson.version>
 
 		<!-- common -->
 		<commons.lang3.version>3.1</commons.lang3.version>
