@@ -86,7 +86,7 @@
 		<!-- Distribution start -->
 
 		<!-- zookeeper -->
-		<zookeeper.version>3.4.8</zookeeper.version>
+		<zookeeper.version>3.4.14</zookeeper.version>
 		<!-- zookeeper client -->
 		<curator.version>2.11.0</curator.version>
 
