@@ -8,7 +8,6 @@ import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import com.milesbone.common.config.IConfiguration;
 
 import redis.clients.jedis.HostAndPort;
-import redis.clients.jedis.JedisPoolConfig;
 
 /**
  * redis配置接口

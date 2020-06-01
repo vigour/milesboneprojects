@@ -10,10 +10,8 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.milesbone.cache.common.monitor.CacheExpireMonitor;
 import com.milesbone.cache.local.entity.LocalCacheEntity;
 import com.milesbone.cache.local.service.ILocalCache;
-import com.milesbone.cache.local.service.impl.LocalCacheImpl;
 import com.milesbone.common.test.base.AbstactBeanTestCase;
 
 public class LocalCacheServiceTest extends AbstactBeanTestCase{
