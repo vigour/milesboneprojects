@@ -39,7 +39,7 @@
 		<mybatis.spring.version>1.2.3</mybatis.spring.version>
 
 		<!-- Mysql版本号 -->
-		<mysql.version>5.1.34</mysql.version>
+		<mysql.version>8.0.16</mysql.version>
 
 		<!-- druid连接池 -->
 		<druid.version>1.0.20</druid.version>
