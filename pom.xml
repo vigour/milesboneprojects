@@ -35,7 +35,7 @@
 		<spring.session.redis.version>1.7.1.RELEASE</spring.session.redis.version>
 
 		<!-- Mybatis -->
-		<mybatis.version>3.3.0</mybatis.version>
+		<mybatis.version>3.5.6</mybatis.version>
 		<mybatis.spring.version>1.2.3</mybatis.spring.version>
 
 		<!-- Mysql版本号 -->
